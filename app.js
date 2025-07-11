@@ -15,8 +15,7 @@ const SECRET_KEY = "MyJWT";
 /* --------------------------------------- */
 dotenv.config();
 pw = process.env.PW;
-// TODO DB_URL 몽고디비 파고 넣기
-const DB_URL = ``;
+const DB_URL = `mongodb+srv://pius0316:${pw}@upanddown.n3ptkyf.mongodb.net/?retryWrites=true&w=majority&appName=UpAndDown`;
 mongoose
   .connect(DB_URL, {
     retryWrites: true,
