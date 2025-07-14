@@ -8,7 +8,6 @@ var cors = require("cors");
 /* --------------------------------------- */
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
-<<<<<<< HEAD
 var authRouter = require("./routes/auth");
 /* --------------------------------------- */
 const mongoose = require("mongoose");
@@ -35,29 +34,12 @@ mongoose
 var app = express();
 app.use(
   cors({
-    origin: ["http://localhost"], // TODO: 클라이언트 주소 배포하면 추가해주기
+    origin: ["http://localhost:3000"], // TODO: 클라이언트 주소 배포하면 추가해주기
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
 /* --------------------------------------- */
-=======
-var balanceRouter = require("./routes/real");
-
-var app = express();
-const cors = require("cors");
-
-/* CORS */
-const allowedOrigins = ["http://localhost:3000"];
-
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-  })
-);
-
->>>>>>> develop
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -65,8 +47,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 /* --------------------------------------- */
 app.use("/", indexRouter);
-<<<<<<< HEAD
 app.use("/auth", authRouter);
+app.use("/users", usersRouter);
+var balanceRouter = require("./routes/real");
+app.use("/api/real", balanceRouter);
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
 
@@ -74,10 +58,6 @@ const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`▶️ Server is listening on http://localhost:${port}`);
 });
-=======
-app.use("/users", usersRouter);
-app.use("/api/real", balanceRouter);
->>>>>>> develop
 
 app.use(function (req, res, next) {
   next(createError(404));
@@ -92,12 +72,6 @@ app.use(function (err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render("error");
-});
-
-const PORT = process.env.PORT || 3001;
-
-app.listen(PORT, () => {
-  console.log(`🚀 서버가 실행 중: http://localhost:${PORT}`);
 });
 
 module.exports = app;
