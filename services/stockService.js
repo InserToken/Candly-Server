@@ -1,7 +1,10 @@
 const fetch = require("node-fetch");
+const { getAccessToken } = require("./tokenService");
 
 async function getBalance(cano, acntPrdtCd) {
   try {
+    const token = await getAccessToken();
+
     const url = new URL(
       "/uapi/domestic-stock/v1/trading/inquire-balance",
       process.env.API_DOMAIN
@@ -24,7 +27,7 @@ async function getBalance(cano, acntPrdtCd) {
     const res = await fetch(url.toString(), {
       method: "GET",
       headers: {
-        authorization: `Bearer ${process.env.API_TOKEN}`,
+        authorization: `Bearer ${token}`,
         appkey: process.env.API_APPKEY,
         appsecret: process.env.API_APPSECRET,
         tr_id: "VTTC8434R",
