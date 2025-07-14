@@ -1,9 +1,9 @@
 var express = require("express");
 const Auth = require("../models/Auth");
-const { createToken, verifyToken } = require("../utils/auth");
+const { createToken } = require("../utils/auth");
 var router = express.Router();
 
-router.post("/signup", async (req, res, next) => {
+router.post("/signup", async (req, res) => {
   try {
     const { email, password, nickname } = req.body;
     console.log(req.body);
@@ -11,12 +11,14 @@ router.post("/signup", async (req, res, next) => {
     res.status(201).json(user);
   } catch (err) {
     console.error(err);
-    res.status(400);
-    next(err);
+    res.status(400).json({
+      field: err.field || null,
+      message: err.message || "회원가입 중 오류가 발생했습니다.",
+    });
   }
 });
 
-router.post("/login", async (req, res, next) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await Auth.login(email, password);
@@ -24,14 +26,15 @@ router.post("/login", async (req, res, next) => {
     const token = createToken(user, tokenMaxAge);
     user.token = token;
 
-    // TODO: user 콘솔 한 번 찍어보기
-    console.log(user);
+    console.log(user); // 로그인 성공 시 콘솔 확인
 
-    res.status(201).json(user);
+    res.status(200).json(user);
   } catch (err) {
     console.error(err);
-    res.status(400);
-    next(err);
+    res.status(400).json({
+      field: err.field || null,
+      message: err.message || "로그인 중 오류가 발생했습니다.",
+    });
   }
 });
 

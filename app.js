@@ -7,6 +7,7 @@ var cors = require("cors");
 /* --------------------------------------- */
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
+var authRouter = require("./routes/auth");
 /* --------------------------------------- */
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -32,7 +33,7 @@ mongoose
 var app = express();
 app.use(
   cors({
-    origin: ["http://localhost:3000"], // TODO: 클라이언트 주소 배포하면 추가해주기
+    origin: ["http://localhost"], // TODO: 클라이언트 주소 배포하면 추가해주기
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
@@ -47,7 +48,13 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 /* --------------------------------------- */
-// catch 404 and forward to error handler
+const port = process.env.PORT || 3001;
+
+// 서버 시작
+app.listen(port, () => {
+  console.log(`▶️ Server is listening on http://localhost:${port}`);
+});
+
 app.use(function (req, res, next) {
   next(createError(404));
 });
