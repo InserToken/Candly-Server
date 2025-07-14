@@ -90,5 +90,5 @@ authSchema.statics.signUp = async function (email, password, nickname) {
   }
 };
 
-const Auth = mongoose.model("Auth", authSchema, "Auth");
+const Auth = mongoose.model("Users", authSchema, "Users");
 module.exports = Auth;
