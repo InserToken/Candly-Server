@@ -1,3 +1,4 @@
+// routes/seedRouter.js
 const express = require("express");
 const { insertStockPrices } = require("../services/seedService");
 const fs = require("fs");
@@ -5,18 +6,23 @@ const path = require("path");
 
 const router = express.Router();
 
-// GET /api/seed/load : 서버에 있는 json 파일(practice_chartdata.json)을 읽어서 DB에 저장
 router.get("/load", async (req, res) => {
   try {
-    const filePath = path.join(__dirname, "../practice_chartdata.json");
-    const rawData = fs.readFileSync(filePath, "utf-8");
-    const jsonData = JSON.parse(rawData);
+    const dirPath = path.join(__dirname, "../kospi200_chart");
+    const files = fs
+      .readdirSync(dirPath)
+      .filter((file) => file.endsWith(".json"));
 
-    await insertStockPrices(jsonData);
+    for (const fileName of files) {
+      const filePath = path.join(dirPath, fileName);
+      const rawData = fs.readFileSync(filePath, "utf-8");
+      const jsonData = JSON.parse(rawData);
+      await insertStockPrices(jsonData);
+    }
 
-    res.status(200).json({ message: "서버에서 파일 불러와 저장 완료" });
+    res.status(200).json({ message: "모든 JSON 파일 DB에 저장 완료" });
   } catch (err) {
-    console.error("JSON 파일 불러오기 실패:", err.message);
+    console.error("파일 처리 중 오류:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
