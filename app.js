@@ -10,6 +10,17 @@ var usersRouter = require("./routes/users");
 var balanceRouter = require("./routes/real");
 
 var app = express();
+const cors = require("cors");
+
+/* CORS */
+const allowedOrigins = ["http://localhost:3000"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 
 app.use(logger("dev"));
 app.use(express.json());
