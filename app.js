@@ -1,3 +1,4 @@
+require("dotenv").config();
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -7,6 +8,7 @@ var cors = require("cors");
 /* --------------------------------------- */
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
+<<<<<<< HEAD
 var authRouter = require("./routes/auth");
 /* --------------------------------------- */
 const mongoose = require("mongoose");
@@ -39,6 +41,23 @@ app.use(
   })
 );
 /* --------------------------------------- */
+=======
+var balanceRouter = require("./routes/real");
+
+var app = express();
+const cors = require("cors");
+
+/* CORS */
+const allowedOrigins = ["http://localhost:3000"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
+
+>>>>>>> develop
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -46,6 +65,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 /* --------------------------------------- */
 app.use("/", indexRouter);
+<<<<<<< HEAD
 app.use("/auth", authRouter);
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
@@ -54,6 +74,10 @@ const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`▶️ Server is listening on http://localhost:${port}`);
 });
+=======
+app.use("/users", usersRouter);
+app.use("/api/real", balanceRouter);
+>>>>>>> develop
 
 app.use(function (req, res, next) {
   next(createError(404));
@@ -68,6 +92,12 @@ app.use(function (err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render("error");
+});
+
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+  console.log(`🚀 서버가 실행 중: http://localhost:${PORT}`);
 });
 
 module.exports = app;
