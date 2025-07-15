@@ -3,7 +3,9 @@ const router = express.Router();
 const { getBalance } = require("../services/stockService");
 const { authenticate } = require("../middleware/auth");
 const UserStock = require("../models/UserStock");
+const Stocks = require("../models/Stocks");
 
+// 보유 주식 저장
 router.post("/", authenticate, async (req, res) => {
   const cano = "50143725";
   const acnt = "01";
@@ -45,20 +47,47 @@ router.post("/", authenticate, async (req, res) => {
   }
 });
 
-router.get("/", authenticate, async (req, res) => {
+// 보유 주식만 조회
+router.get("/stock", authenticate, async (req, res) => {
   const userId = req.user._id;
-  try {
-    const userStock = await UserStock.find({ user_id: userId });
 
-    console.log("보유 주식 DB 조회 완료:", userStock);
-    res.json({ message: "보유 주식 DB 조회 완료", userStock });
+  try {
+    const userStock = await UserStock.find({ user_id: userId }).populate(
+      "stock_code"
+    );
+    // stock_code만 추출
+    const stockOnly = userStock.map((s) => s.stock_code);
+
+    res.json({
+      message: "보유 주식 코드만 추출 완료",
+      stocks: stockOnly,
+    });
   } catch (err) {
     console.error(err);
-    res.status(500);
-    next(err);
+    res.status(500).json({ message: "서버 오류" });
   }
 });
 
+// 보유 주식 조회(전체)
+router.get("/", async (req, res) => {
+  try {
+    const userStock = await UserStock.find()
+      .populate("user_id", "nickname")
+      .populate("stock_code");
+
+    console.log("보유 주식 DB 조회 완료:", userStock);
+
+    res.json({
+      message: "보유 주식 DB 조회 완료",
+      userStock,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "서버 오류" });
+  }
+});
+
+// 보유 주식 여부
 router.get("/status", authenticate, async (req, res) => {
   const userId = req.user._id;
   try {

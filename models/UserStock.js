@@ -6,7 +6,7 @@ const userStockSchema = new mongoose.Schema({
     ref: "Auth",
     required: true,
   },
-  stock_code: { type: String },
+  stock_code: { type: String, ref: "Stocks", required: true },
   cumulative_score: { type: Number },
 });
 
