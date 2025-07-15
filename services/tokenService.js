@@ -27,11 +27,10 @@ function saveTokenCache(token, expiresAt) {
   fs.writeFileSync(CACHE_FILE, JSON.stringify({ token, expiresAt }), "utf-8");
   console.log("💾 토큰 캐시 저장 완료");
 }
-
-async function getAccessToken() {
+async function getAccessToken(forceRefresh = false) {
   const now = Date.now();
 
-  if (cachedToken && tokenExpiresAt && now < tokenExpiresAt) {
+  if (!forceRefresh && cachedToken && tokenExpiresAt && now < tokenExpiresAt) {
     return cachedToken;
   }
 
@@ -65,13 +64,13 @@ async function getAccessToken() {
 
     const data = await res.json();
     cachedToken = data.access_token;
-    tokenExpiresAt = now + (data.expires_in - 300) * 1000; // 만료 5분 전부터 새로 받기
+    tokenExpiresAt = now + (data.expires_in - 300) * 1000;
 
     saveTokenCache(cachedToken, tokenExpiresAt);
     return cachedToken;
   } catch (err) {
     console.error("🚨 getAccessToken 오류:", err.message);
-    if (cachedToken) {
+    if (!forceRefresh && cachedToken) {
       console.warn("🔁 기존 토큰 재사용 (예외 발생)");
       return cachedToken;
     }

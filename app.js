@@ -60,6 +60,8 @@ const stockSeedRouter = require("./routes/stockSeedRouter");
 app.use("/api/stockSeed", stockSeedRouter);
 const stockPriceRouter = require("./routes/currentStock");
 app.use("/api/currentStock", stockPriceRouter);
+const holidayRouter = require("./routes/holiday");
+app.use("/api/holiday", holidayRouter);
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
 
