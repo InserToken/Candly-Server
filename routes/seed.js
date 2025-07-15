@@ -1,4 +1,6 @@
 // routes/seedRouter.js
+// 차트 정보 넣기
+
 const express = require("express");
 const { insertStockPrices } = require("../services/seedService");
 const fs = require("fs");

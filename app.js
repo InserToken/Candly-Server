@@ -49,11 +49,14 @@ app.use(express.static(path.join(__dirname, "public")));
 /* --------------------------------------- */
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
-app.use("/api/real", balanceRouter);
 const seedRouter = require("./routes/seed");
 app.use("/api/seed", seedRouter);
 // app.use("/api/real", balanceRouter);
 app.use("/api/userStock", userStockRouter);
+const practiceProblemSeedRouter = require("./routes/practiceProblemSeedRouter");
+app.use("/api/practiceSeed", practiceProblemSeedRouter);
+const stockSeedRouter = require("./routes/stockSeedRouter");
+app.use("/api/stockSeed", stockSeedRouter);
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
 
