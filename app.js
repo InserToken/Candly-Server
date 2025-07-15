@@ -7,8 +7,8 @@ var logger = require("morgan");
 var cors = require("cors");
 /* --------------------------------------- */
 var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
 var authRouter = require("./routes/auth");
+var balanceRouter = require("./routes/real");
 /* --------------------------------------- */
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -48,8 +48,6 @@ app.use(express.static(path.join(__dirname, "public")));
 /* --------------------------------------- */
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
-app.use("/users", usersRouter);
-var balanceRouter = require("./routes/real");
 app.use("/api/real", balanceRouter);
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
@@ -71,7 +69,7 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render("error");
+  // res.render("error");
 });
 
 module.exports = app;

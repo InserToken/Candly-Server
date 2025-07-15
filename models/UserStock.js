@@ -1,0 +1,13 @@
+const mongoose = require("mongoose");
+
+const userStockSchema = new mongoose.Schema({
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Auth",
+    required: true,
+  },
+  stock_code: { type: String },
+  cumulative_score: { type: Number },
+});
+
+module.exports = mongoose.model("UserStock", userStockSchema);

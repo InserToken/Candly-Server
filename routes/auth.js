@@ -1,6 +1,8 @@
 var express = require("express");
 const Auth = require("../models/Auth");
 const { createToken } = require("../utils/auth");
+const { authenticate } = require("../middleware/auth");
+
 var router = express.Router();
 
 router.post("/signup", async (req, res) => {
@@ -48,6 +50,24 @@ router.all("/logout", (req, res) => {
   });
   // 클라이언트에 응답
   res.status(200).json({ message: "로그아웃되었습니다." });
+});
+
+/* --- 내 정보 확인 --- */
+router.get("/me", authenticate, async (req, res) => {
+  try {
+    const user = req.user; // 미들웨어에서 전달된 사용자 정보
+
+    res.status(200).json({
+      success: true,
+      user: {
+        email: user.email,
+        nickname: user.nickname,
+      },
+    });
+  } catch (err) {
+    console.error("내 정보 조회 중 에러 발생:", err);
+    res.status(500).json({ success: false, message: "서버 에러" });
+  }
 });
 
 module.exports = router;
