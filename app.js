@@ -36,7 +36,7 @@ mongoose
 var app = express();
 app.use(
   cors({
-    origin: ["http://localhost:3000"], // TODO: 클라이언트 주소 배포하면 추가해주기
+    origin: ["http://localhost:3000", "http://localhost"], // TODO: 클라이언트 주소 배포하면 추가해주기
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
@@ -50,9 +50,15 @@ app.use(express.static(path.join(__dirname, "public")));
 /* --------------------------------------- */
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
+const seedRouter = require("./routes/seed");
+app.use("/api/seed", seedRouter);
 // app.use("/api/real", balanceRouter);
 app.use("/api/userStock", userStockRouter);
 app.use("/api/mypage", myPageRouter);
+const practiceProblemSeedRouter = require("./routes/practiceProblemSeedRouter");
+app.use("/api/practiceSeed", practiceProblemSeedRouter);
+const stockSeedRouter = require("./routes/stockSeedRouter");
+app.use("/api/stockSeed", stockSeedRouter);
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
 
