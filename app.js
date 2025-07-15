@@ -10,6 +10,7 @@ var indexRouter = require("./routes/index");
 var authRouter = require("./routes/auth");
 // var balanceRouter = require("./routes/real");
 var userStockRouter = require("./routes/userStock");
+var myPageRouter = require("./routes/myPage");
 /* --------------------------------------- */
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -51,6 +52,7 @@ app.use("/", indexRouter);
 app.use("/auth", authRouter);
 // app.use("/api/real", balanceRouter);
 app.use("/api/userStock", userStockRouter);
+app.use("/api/mypage", myPageRouter);
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
 
