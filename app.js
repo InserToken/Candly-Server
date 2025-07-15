@@ -8,7 +8,8 @@ var cors = require("cors");
 /* --------------------------------------- */
 var indexRouter = require("./routes/index");
 var authRouter = require("./routes/auth");
-var balanceRouter = require("./routes/real");
+// var balanceRouter = require("./routes/real");
+var userStockRouter = require("./routes/userStock");
 /* --------------------------------------- */
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -48,7 +49,8 @@ app.use(express.static(path.join(__dirname, "public")));
 /* --------------------------------------- */
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
-app.use("/api/real", balanceRouter);
+// app.use("/api/real", balanceRouter);
+app.use("/api/userStock", userStockRouter);
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
 
