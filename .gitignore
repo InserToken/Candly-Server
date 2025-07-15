@@ -23,6 +23,6 @@ coverage/
 
 # misc
 .DS_Store
-
-
+kospi200_chart
 tokenCache.json
+practice_problem.json
