@@ -11,7 +11,6 @@ var indexRouter = require("./routes/index");
 var authRouter = require("./routes/auth");
 // var balanceRouter = require("./routes/real");
 var userStockRouter = require("./routes/userStock");
-var practiceRouter = require("./routes/practice");
 /* --------------------------------------- */
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -61,9 +60,8 @@ const stockSeedRouter = require("./routes/stockSeedRouter");
 app.use("/api/stockSeed", stockSeedRouter);
 const holidayRouter = require("./routes/holiday");
 app.use("/api/holiday", holidayRouter);
-app.use("/api/practice", practiceRouter);
 const practiceProblemRouter = require("./routes/practiceProblem");
-app.use("/api/practice-problem", practiceProblemRouter);
+app.use("/api/practice", practiceProblemRouter);
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
 

@@ -4,6 +4,41 @@ const mongoose = require("mongoose");
 const PracticeProblem = require("../models/PracticeProblem");
 const PracticeChartData = require("../models/PracticeChartData");
 
+// routes/practice.js 또는 controller
+
+router.get("/", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const keyword = req.query.keyword || "";
+    const category = req.query.category;
+
+    const query = {};
+    if (keyword) {
+      query.title = { $regex: keyword, $options: "i" };
+    }
+    if (category && category !== "all") {
+      query.problemtype = Number(category); // ← 중요!
+    }
+
+    const pageSize = 20;
+    const totalCount = await PracticeProblem.countDocuments(query);
+    const problems = await PracticeProblem.find(query)
+      .sort({ date: 1 })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+
+    res.json({
+      practiceProblem: problems,
+      totalPages: Math.ceil(totalCount / pageSize),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "서버 오류" });
+  }
+});
+
+module.exports = router;
+
 router.get("/:problemId", async (req, res) => {
   try {
     const { problemId } = req.params;
