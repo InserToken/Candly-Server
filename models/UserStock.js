@@ -10,4 +10,4 @@ const userStockSchema = new mongoose.Schema({
   cumulative_score: { type: Number },
 });
 
-module.exports = mongoose.model("UserStock", userStockSchema);
+module.exports = mongoose.model("UserStocks", userStockSchema);
