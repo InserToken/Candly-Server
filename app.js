@@ -60,6 +60,10 @@ const practiceProblemSeedRouter = require("./routes/practiceProblemSeedRouter");
 app.use("/api/practiceSeed", practiceProblemSeedRouter);
 const stockSeedRouter = require("./routes/stockSeedRouter");
 app.use("/api/stockSeed", stockSeedRouter);
+const holidayRouter = require("./routes/holiday");
+app.use("/api/holiday", holidayRouter);
+const practiceProblemRouter = require("./routes/practiceProblem");
+app.use("/api/practice-problem", practiceProblemRouter);
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
 

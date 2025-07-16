@@ -1,9 +1,9 @@
 const fetch = require("node-fetch");
 const { getAccessToken } = require("./tokenService");
 
-async function getBalance(cano, acntPrdtCd) {
+async function getBalance(cano, acntPrdtCd, retry = false) {
   try {
-    const token = await getAccessToken();
+    const token = await getAccessToken(retry); // retry 시 강제 재발급
 
     const url = new URL(
       "/uapi/domestic-stock/v1/trading/inquire-balance",
@@ -22,8 +22,6 @@ async function getBalance(cano, acntPrdtCd) {
     url.searchParams.set("CTX_AREA_FK100", "");
     url.searchParams.set("CTX_AREA_NK100", "");
 
-    console.log("요청 URL:", url.toString());
-
     const res = await fetch(url.toString(), {
       method: "GET",
       headers: {
@@ -38,12 +36,21 @@ async function getBalance(cano, acntPrdtCd) {
       },
     });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`잔고 조회 실패: ${res.status} - ${errText}`);
+    const body = await res.json();
+
+    // 만료된 토큰 에러 처리
+    if (body.msg_cd === "EGW00123" && !retry) {
+      console.warn("🔁 만료된 토큰 감지, 재발급 후 재요청 시도");
+      return await getBalance(cano, acntPrdtCd, true);
     }
 
-    return await res.json();
+    if (!res.ok || body.rt_cd === "1") {
+      throw new Error(
+        `잔고 조회 실패: ${res.status} - ${JSON.stringify(body)}`
+      );
+    }
+
+    return body;
   } catch (err) {
     console.error("🚨 getBalance 오류:", err.message);
     throw err;
