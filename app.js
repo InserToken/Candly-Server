@@ -55,7 +55,7 @@ const seedRouter = require("./routes/seed");
 app.use("/api/seed", seedRouter);
 // app.use("/api/real", balanceRouter);
 app.use("/api/userStock", userStockRouter);
-app.use("/api/mypage", myPageRouter);
+app.use("/api/myPage", myPageRouter);
 const practiceProblemSeedRouter = require("./routes/practiceProblemSeedRouter");
 app.use("/api/practiceSeed", practiceProblemSeedRouter);
 const stockSeedRouter = require("./routes/stockSeedRouter");
