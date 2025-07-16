@@ -9,6 +9,7 @@ const stockSchema = new mongoose.Schema({
   state: { type: Boolean },
   listing_date: { type: String },
   index: { type: String },
+  logo: { type: String },
 });
 
 module.exports = mongoose.model("Stocks", stockSchema);
