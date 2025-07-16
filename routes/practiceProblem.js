@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const PracticeProblem = require("../models/PracticeProblem");
 const PracticeChartData = require("../models/PracticeChartData");
+const practiceNews = require("../models/PracticeNews");
 
 // routes/practice.js 또는 controller
 
@@ -39,6 +40,7 @@ router.get("/", async (req, res) => {
 
 module.exports = router;
 
+//문제정보조회
 router.get("/:problemId", async (req, res) => {
   try {
     const { problemId } = req.params;
@@ -93,6 +95,34 @@ router.get("/:problemId", async (req, res) => {
   } catch (err) {
     console.error("문제 조회 에러:", err);
     res.status(500).json({ error: "문제 조회 중 오류 발생" });
+  }
+});
+
+//뉴스조회
+router.get("/:problemId/news", async (req, res) => {
+  try {
+    const { problemId } = req.params;
+
+    if (!problemId) {
+      return res.status(400).json({ error: "문제 Id 파라미터가 필요합니다." });
+    }
+
+    const newsdata = await practiceNews.findOne({ problem_id: problemId });
+
+    if (!newsdata) {
+      return res
+        .status(404)
+        .json({ error: "해당 문제에 해당하는 뉴스를 찾을 수 없습니다." });
+    }
+
+    const news = newsdata.news;
+
+    return res.json({
+      news,
+    });
+  } catch (err) {
+    console.error("뉴스 조회 에러:", err);
+    res.status(500).json({ error: "뉴스 조회 중 오류 발생" });
   }
 });
 
