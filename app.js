@@ -63,6 +63,8 @@ app.use("/api/holiday", holidayRouter);
 const practiceProblemRouter = require("./routes/practiceProblem");
 app.use("/api/practice", practiceProblemRouter);
 /* --------------------------------------- */
+require("./services/getHoliday");
+/* --------------------------------------- */
 const port = process.env.PORT || 3001;
 
 // 서버 시작
