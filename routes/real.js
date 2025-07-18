@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-// const stock = require("../models/Stocks");
-const PracticeChartData = require("../models/PracticeChartData");
+const stock = require("../models/Stocks");
+const { default: fetchRealNews } = require("../services/fetchRealNews");
 
 //뉴스조회
 router.get("/:stock_code/news", async (req, res) => {
@@ -14,15 +14,14 @@ router.get("/:stock_code/news", async (req, res) => {
         .json({ error: "stock code 파라미터가 필요합니다." });
     }
 
-    const chartData = await PracticeChartData.findOne({ stock_code });
+    const stockInfo = await stock.findOne({ _id: stock_code });
+    const stockName = stockInfo.name;
 
-    if (!chartData || !chartData.prices || chartData.prices.length === 0) {
-      return res.status(404).json({ error: "차트 데이터가 없습니다." });
+    const newsdata = await fetchRealNews(stockName);
+
+    if (!newsdata) {
+      return res.status(404).json({ error: "최근 뉴스가 없습니다." });
     }
-
-    const sortedPrices = chartData.prices.sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
-    );
 
     return res.json({
       newsdata,
