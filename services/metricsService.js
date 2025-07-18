@@ -75,19 +75,19 @@ async function computeMetrics(stockCode, dateStr) {
     : null;
 
   return {
-    price: { price: stockPrice, date: priceDate },
-    ttmProfit,
-    ttmRevenue,
-    ttmequity,
-    shareCount,
-    eps,
+    // price: { price: stockPrice, date: priceDate },
+    // ttmProfit,
+    // ttmRevenue,
+    // ttmequity,
+    // shareCount,
+    // eps,
     per,
     psr,
-    bps,
+    // bps,
     pbr,
-    roe,
-    changeAmount,
-    changeRate,
+    // roe,
+    // changeAmount,
+    // changeRate,
   };
 }
 
