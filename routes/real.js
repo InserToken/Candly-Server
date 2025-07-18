@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const stock = require("../models/Stocks");
-const { default: fetchRealNews } = require("../services/fetchRealNews");
+const fetchRealNews = require("../services/fetchRealNews");
 
-//뉴스조회
+// 뉴스조회
 router.get("/:stock_code/news", async (req, res) => {
   try {
     const { stock_code } = req.params;
