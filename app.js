@@ -58,12 +58,14 @@ const practiceProblemSeedRouter = require("./routes/practiceProblemSeedRouter");
 app.use("/api/practiceSeed", practiceProblemSeedRouter);
 const stockSeedRouter = require("./routes/stockSeedRouter");
 app.use("/api/stockSeed", stockSeedRouter);
-const stockPriceRouter = require("./routes/currentStock");
-app.use("/api/currentStock", stockPriceRouter);
+const financeRouter = require("./routes/financialRoutes");
+app.use("/api/financial", financeRouter);
 const holidayRouter = require("./routes/holiday");
 app.use("/api/holiday", holidayRouter);
 const stockNewsSeeder = require("./routes/stockNewsSeedRouter");
 app.use("/api/stockNews", stockNewsSeeder);
+const metricsRoutes = require("./routes/metricsRoutes");
+app.use("/api/financial", metricsRoutes);
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
 
