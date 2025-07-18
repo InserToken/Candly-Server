@@ -38,4 +38,6 @@ const practiceNewsSchema = new mongoose.Schema({
   news: [newsListSchema],
 });
 
-module.exports = mongoose.model("PracticeNews", practiceNewsSchema);
+module.exports =
+  mongoose.models.PracticeNews ||
+  mongoose.model("PracticeNews", practiceNewsSchema);
