@@ -18,7 +18,7 @@ const practiceScoreSchema = new mongoose.Schema({
   macroEconomy: Number,
   marketIssues: Number,
   quantEvidence: Number,
-  date: date,
+  date: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("PracticeScore", practiceScoreSchema);

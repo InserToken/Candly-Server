@@ -2,20 +2,24 @@ const express = require("express");
 const router = express.Router();
 const UserStock = require("../models/UserStock");
 const RealScore = require("../models/RealScore");
-
+const PracticeScore = require("../models/PracticeScore");
+const PracticeProblem = require("../models/PracticeProblem");
 const { authenticate } = require("../middleware/auth");
 
 //연습 문제 조회
 router.get("/practice", authenticate, async (req, res) => {
   try {
-    const userId = req.user._id; // 로그인된 사용자 기준 (authenticate 미들웨어 필요)
+    const userId = req.user._id;
 
-    const scores = await PracticeScore.find({ user_id: userId }).populate({
-      path: "problem_id",
-      select: "stock_code title date", // 필요한 필드만 선택
-    });
+    const scores = await PracticeScore.find({ user_id: userId })
+      .populate({
+        path: "problem_id",
+        select: "stock_code title date", // 필요한 필드만 선택
+        strictPopulate: false,
+      })
+      .sort({ date: -1 }); // 최신순 정렬
 
-    res.status(200).json({
+    res.json({
       message: "연습 투자 예측 점수 조회 성공",
       data: scores,
     });
