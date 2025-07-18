@@ -62,6 +62,8 @@ const holidayRouter = require("./routes/holiday");
 app.use("/api/holiday", holidayRouter);
 const practiceProblemRouter = require("./routes/practiceProblem");
 app.use("/api/practice", practiceProblemRouter);
+const realRouter = require("./routes/real");
+app.use("/api/real", realRouter);
 /* --------------------------------------- */
 require("./services/getHoliday");
 /* --------------------------------------- */

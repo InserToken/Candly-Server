@@ -2,7 +2,7 @@
 const axios = require("axios");
 const Holiday = require("../models/Holiday");
 const { format } = require("date-fns");
-const toDashDate = require("../utils/date").default;
+const { toDashDate } = require("../utils/date");
 require("dotenv").config();
 
 // 공공api
