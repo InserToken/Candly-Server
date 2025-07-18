@@ -8,7 +8,7 @@ const practiceScoreSchema = new mongoose.Schema({
   },
   problem_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "PracticeProblem",
+    ref: "PracticeProblems",
     required: true,
   },
   answer: String,
