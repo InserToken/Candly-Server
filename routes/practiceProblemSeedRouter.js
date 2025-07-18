@@ -11,7 +11,10 @@ const router = express.Router();
 
 router.get("/load-practice-problems", async (req, res) => {
   try {
-    const filePath = path.join(__dirname, "../practice_problem.json");
+    const filePath = path.join(
+      __dirname,
+      "../practice_problem_2018up_simple.json"
+    );
     const rawData = fs.readFileSync(filePath, "utf-8");
     const jsonData = JSON.parse(rawData); // 배열 형태
 

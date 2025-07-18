@@ -63,7 +63,7 @@ router.get("/:problemId", async (req, res) => {
   }
 });
 
-//뉴스조회
+// 뉴스 조회
 router.get("/:problemId/news", async (req, res) => {
   try {
     const { problemId } = req.params;

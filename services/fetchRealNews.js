@@ -1,6 +1,6 @@
-import * as cheerio from "cheerio";
-import { getTodayStr } from "../utils/date.js";
-import { formatDate } from "../utils/date.js";
+const cheerio = require("cheerio");
+const { getTodayStr, formatDate } = require("../utils/date.js");
+// import { formatDate, getTodayStr } from "../utils/date.js";
 
 function generateDateRange(targetDate, days) {
   const dates = [];
@@ -12,7 +12,7 @@ function generateDateRange(targetDate, days) {
   return dates;
 }
 
-export default async function fetchRealNews(targetStock) {
+async function fetchRealNews(targetStock) {
   const today = getTodayStr();
   const encodedStock = encodeURIComponent(targetStock);
   const dates = generateDateRange(today, 5);
@@ -49,3 +49,5 @@ export default async function fetchRealNews(targetStock) {
   }
   return results;
 }
+
+module.exports = fetchRealNews;
