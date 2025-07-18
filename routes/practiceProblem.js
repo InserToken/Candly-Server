@@ -46,7 +46,7 @@ router.get("/:problemId", async (req, res) => {
     }
 
     // 19일 전부터 20일 후까지 자르기
-    const start = Math.max(0, targetIndex - 19);
+    const start = Math.max(0, targetIndex - 139);
     const end = Math.min(sortedPrices.length, targetIndex + 21);
     const tenDaySlice = sortedPrices.slice(start, end);
 
