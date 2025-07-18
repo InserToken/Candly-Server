@@ -1,12 +1,9 @@
-// db에 공휴일+주말 추가 (공공api + getDay)
+// db에 공휴일+주말 추가 (공공api + getDay) 매일 한번씩 작동
 const axios = require("axios");
-const mongoose = require("mongoose");
 const Holiday = require("../models/Holiday");
 const { format } = require("date-fns");
-const toDashDate = require("../utils/date").default;
+const { toDashDate } = require("../utils/date");
 require("dotenv").config();
-
-mongoose.connect(process.env.DB_URI);
 
 // 공공api
 async function fetchOfficialHolidays(year) {
@@ -92,11 +89,24 @@ async function saveHolidaysToDB(year) {
   }
 }
 
-// node 명령어로 직접 실행될 때만 작동
-if (require.main === module) {
-  const year = "2026";
-  saveHolidaysToDB(year).then(() => {
-    console.log("✅ 완료");
-    process.exit(0);
-  });
-}
+// 매일 자정 실행
+const cron = require("node-cron");
+cron.schedule("0 0 * * *", () => {
+  saveHolidaysToDB("2025");
+  saveHolidaysToDB("2026");
+});
+
+// if (require.main === module) {
+//   const year = 2025;
+
+//   saveHolidaysToDB(String(year))
+//     .then(() => saveHolidaysToDB(String(year + 1)))
+//     .then(() => {
+//       console.log("✅ 공휴일 DB 저장 완료");
+//       process.exit(0);
+//     })
+//     .catch((error) => {
+//       console.error("❌ 공휴일 DB 저장 중 에러 발생:", error);
+//       process.exit(1);
+//     });
+// }

@@ -11,6 +11,7 @@ var indexRouter = require("./routes/index");
 var authRouter = require("./routes/auth");
 // var balanceRouter = require("./routes/real");
 var userStockRouter = require("./routes/userStock");
+var myPageRouter = require("./routes/myPage");
 /* --------------------------------------- */
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -54,6 +55,7 @@ const seedRouter = require("./routes/seed");
 app.use("/api/seed", seedRouter);
 // app.use("/api/real", balanceRouter);
 app.use("/api/userStock", userStockRouter);
+app.use("/api/myPage", myPageRouter);
 const practiceProblemSeedRouter = require("./routes/practiceProblemSeedRouter");
 app.use("/api/practiceSeed", practiceProblemSeedRouter);
 const stockSeedRouter = require("./routes/stockSeedRouter");
@@ -62,10 +64,19 @@ const financeRouter = require("./routes/financialRoutes");
 app.use("/api/financial", financeRouter);
 const holidayRouter = require("./routes/holiday");
 app.use("/api/holiday", holidayRouter);
+<<<<<<< HEAD
 const stockNewsSeeder = require("./routes/stockNewsSeedRouter");
 app.use("/api/stockNews", stockNewsSeeder);
 const metricsRoutes = require("./routes/metricsRoutes");
 app.use("/api/financial", metricsRoutes);
+=======
+const practiceProblemRouter = require("./routes/practiceProblem");
+app.use("/api/practice", practiceProblemRouter);
+const realRouter = require("./routes/real");
+app.use("/api/real", realRouter);
+/* --------------------------------------- */
+require("./services/getHoliday");
+>>>>>>> develop
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
 
