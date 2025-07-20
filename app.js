@@ -9,9 +9,14 @@ var cors = require("cors");
 /* --------------------------------------- */
 var indexRouter = require("./routes/index");
 var authRouter = require("./routes/auth");
-// var balanceRouter = require("./routes/real");
 var userStockRouter = require("./routes/userStock");
 var myPageRouter = require("./routes/myPage");
+const practiceProblemSeedRouter = require("./routes/practiceProblemSeedRouter");
+const stockSeedRouter = require("./routes/stockSeedRouter");
+const holidayRouter = require("./routes/holiday");
+const practiceProblemRouter = require("./routes/practiceProblem");
+const realRouter = require("./routes/real");
+const rankRouter = require("./routes/ranking");
 /* --------------------------------------- */
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -53,25 +58,14 @@ app.use("/", indexRouter);
 app.use("/auth", authRouter);
 const seedRouter = require("./routes/seed");
 app.use("/api/seed", seedRouter);
-// app.use("/api/real", balanceRouter);
 app.use("/api/userStock", userStockRouter);
 app.use("/api/myPage", myPageRouter);
-const practiceProblemSeedRouter = require("./routes/practiceProblemSeedRouter");
 app.use("/api/practiceSeed", practiceProblemSeedRouter);
-const stockSeedRouter = require("./routes/stockSeedRouter");
-app.use("/api/stockSeed", stockSeedRouter);
-const financeRouter = require("./routes/financialRoutes");
-app.use("/api/financial", financeRouter);
-const holidayRouter = require("./routes/holiday");
+// app.use("/api/stockSeed", stockSeedRouter);
 app.use("/api/holiday", holidayRouter);
-const stockNewsSeeder = require("./routes/stockNewsSeedRouter");
-app.use("/api/stockNews", stockNewsSeeder);
-const metricsRoutes = require("./routes/metricsRoutes");
-app.use("/api/financial", metricsRoutes);
-const practiceProblemRouter = require("./routes/practiceProblem");
 app.use("/api/practice", practiceProblemRouter);
-const realRouter = require("./routes/real");
 app.use("/api/real", realRouter);
+app.use("/api/rank", rankRouter);
 /* --------------------------------------- */
 require("./services/getHoliday");
 /* --------------------------------------- */
