@@ -28,18 +28,3 @@ async function fetchStockPrice(stockCode) {
   if (isNaN(price)) throw new Error("주가 파싱 실패");
   return price;
 }
-
-// DART API
-async function fetchStockData(corpCode, year, reprtCode) {
-  const url = `${FIN_URL}?crtfc_key=${API_KEY}&corp_code=${corpCode}&bsns_year=${year}&reprt_code=${reprtCode}`;
-  const res = await fetch(url);
-  const data = await res.json();
-
-  if (data.status !== "000") return null;
-
-  const stockCntItem = data.list.find((d) => d.se === "보통주");
-  return {
-    total: parseInt(stockCntItem.istc_totqy.replace(/,/g, "")),
-    own: parseInt(stockCntItem.now_to_dcrs_stock_totqy.replace(/,/g, "")),
-  };
-}

@@ -9,7 +9,6 @@ var cors = require("cors");
 /* --------------------------------------- */
 var indexRouter = require("./routes/index");
 var authRouter = require("./routes/auth");
-// var balanceRouter = require("./routes/real");
 var userStockRouter = require("./routes/userStock");
 
 /* --------------------------------------- */
@@ -37,7 +36,11 @@ mongoose
 var app = express();
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost"], // TODO: 클라이언트 주소 배포하면 추가해주기
+    origin: [
+      "http://localhost:3000",
+      "http://localhost",
+      "http://15.164.239.245",
+    ], // TODO: 클라이언트 주소 배포하면 추가해주기
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
@@ -50,29 +53,20 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 /* --------------------------------------- */
 app.use("/", indexRouter);
-app.use("/auth", authRouter);
+app.use("/api/auth", authRouter);
 const seedRouter = require("./routes/seed");
 app.use("/api/seed", seedRouter);
-// app.use("/api/real", balanceRouter);
 app.use("/api/userStock", userStockRouter);
 const myPageRouter = require("./routes/myPage");
 app.use("/api/myPage", myPageRouter);
-const practiceProblemSeedRouter = require("./routes/practiceProblemSeedRouter");
 app.use("/api/practiceSeed", practiceProblemSeedRouter);
-const stockSeedRouter = require("./routes/stockSeedRouter");
-app.use("/api/stockSeed", stockSeedRouter);
-const financeRouter = require("./routes/financialRoutes");
-app.use("/api/financial", financeRouter);
-const holidayRouter = require("./routes/holiday");
+// app.use("/api/stockSeed", stockSeedRouter);
 app.use("/api/holiday", holidayRouter);
-const stockNewsSeeder = require("./routes/stockNewsSeedRouter");
-app.use("/api/stockNews", stockNewsSeeder);
-const metricsRoutes = require("./routes/metricsRoutes");
-app.use("/api/financial", metricsRoutes);
-const practiceProblemRouter = require("./routes/practiceProblem");
 app.use("/api/practice", practiceProblemRouter);
-const realRouter = require("./routes/real");
 app.use("/api/real", realRouter);
+const newsRouter = require("./routes/news");
+app.use("/api", newsRouter);
+app.use("/api/rank", rankRouter);
 /* --------------------------------------- */
 require("./services/getHoliday");
 /* --------------------------------------- */
