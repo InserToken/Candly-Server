@@ -22,15 +22,16 @@ function getPeriodDate(entry) {
  * @returns {Promise<object>} 계산된 지표들
  */
 async function computeMetrics(stockCode, dateStr) {
-  // 1) DB에서 불러오기
+  // DB에서 불러오기
   const doc = await FinancialSummary.findOne({ stock_code: stockCode }).lean();
   if (!doc) throw new Error("금융 요약 데이터가 없습니다: " + stockCode);
 
-  // 2) 기준일자 파싱
+  // 기준일자 파싱
   const baseDate = new Date(dateStr.replace(/\./g, "-"));
+  // console.log(baseDate);
   if (isNaN(baseDate)) throw new Error("잘못된 날짜 형식: " + dateStr);
 
-  // 3) entries 에 periodDate 부착 & 기준 이전만 필터링
+  // entries 에 periodDate 부착 & 기준 이전만 필터링
   const withDate = doc.entries.map((e) => ({
     ...e,
     periodDate: getPeriodDate(e),
@@ -41,53 +42,60 @@ async function computeMetrics(stockCode, dateStr) {
 
   if (valid.length < 2) throw new Error("조회일자 이전에 분기가 부족합니다");
 
-  // 4) 최근 4분기, 현재·직전
-  const ttmEntries = valid.slice(-4);
-  const curr = ttmEntries[ttmEntries.length - 1];
-  const prev = valid[valid.length - 2];
-
-  // 5) TTM 합산 및 평균자본
-  const ttmProfit = ttmEntries.reduce((s, e) => s + e.net_profit_govern, 0);
-  const ttmRevenue = ttmEntries.reduce((s, e) => s + e.revenue, 0);
-  const avgEquity =
-    ttmEntries.reduce((s, e) => s + e.equity, 0) / ttmEntries.length;
-  const ttmequity = curr.equity;
-  const shareCount = curr.istc_totqy; // 총 발행 주식수
-
-  // 6) 주가 조회 → 숫자만 꺼내서
+  // TTM 합산 및 평균자본
   const { price: stockPrice, date: priceDate } = await fetchStockPrice(
     stockCode,
     dateStr
   );
 
-  // 7) 지표 계산
-  const eps = shareCount ? ttmProfit / shareCount : null;
+  const ttmProfit = valid[valid.length - 1].profit; //당기 순이익
+  const ttmRevenue = valid[valid.length - 1].revenue_ttm; //매출액
+  const ttmequity = valid[valid.length - 1].equity_ttm; // 순자산
+  const shareCount = valid[valid.length - 1].istc_totqy; // 총 발행 주식수
+  const profit_diff = valid[valid.length - 1].profit_diff; // 증감액
+  const profit_diff_rate = valid[valid.length - 1].profit_diff_rate; // 증감률
+  // const revenue = valid[valid.length - 1].revenue;
+  // const netProfit_govern = valid[valid.length - 1].net_profit_govern; // 순이익
+  // const profitMargin = valid[valid.length - 1].profit_margin; // 순 이익률
+  // const growthRate = valid[valid.length - 1].growth_rate; //순 이익 성장률
+  // const operatingProfit = valid[valid.length - 1].operating_profit; // 영업 이익
+  // const operatingMargin = valid[valid.length - 1].operating_margin; // 영업 이익률
+  // const operatingGrowthRate = valid[valid.length - 1].operating_growth_rate; // 영업 이익 성장률
+
+  // 지표 계산
+  const eps = valid[valid.length - 1].eps;
+  const bps = valid[valid.length - 1].bps;
+  const roe = valid[valid.length - 1].roe;
+
+  const pbr = bps ? stockPrice / bps : null;
   const per = eps ? stockPrice / eps : null;
   const psr = ttmRevenue ? (stockPrice * shareCount) / ttmRevenue : null;
-  const bps = shareCount ? ttmequity / shareCount : null;
-  const pbr = bps ? stockPrice / bps : null;
-  const roe = avgEquity ? (ttmProfit / avgEquity) * 100 : null;
 
-  // 8) 분기별 증감
-  const changeAmount = curr.net_profit_govern - prev.net_profit_govern;
-  const changeRate = prev.net_profit_govern
-    ? (changeAmount / prev.net_profit_govern) * 100
-    : null;
+  const series = {
+    period: valid.map((e) => `${e.bsns_year}.${e.reprt_code}`),
+    revenue: valid.map((e) => e.revenue),
+    netProfit_govern: valid.map((e) => e.net_profit_govern),
+    profitMargin: valid.map((e) => e.profit_margin),
+    growthRate: valid.map((e) => e.growth_rate),
+    operatingProfit: valid.map((e) => e.operating_profit),
+    operatingMargin: valid.map((e) => e.operating_margin),
+    operatingGrowthRate: valid.map((e) => e.operating_growth_rate),
+  };
 
   return {
-    // price: { price: stockPrice, date: priceDate },
-    // ttmProfit,
-    // ttmRevenue,
-    // ttmequity,
-    // shareCount,
-    // eps,
+    price: { price: stockPrice, date: priceDate },
     per,
     psr,
-    // bps,
     pbr,
-    // roe,
-    // changeAmount,
-    // changeRate,
+    eps,
+    bps,
+    roe,
+    ttmProfit,
+    ttmRevenue,
+    ttmequity,
+    profit_diff,
+    profit_diff_rate,
+    series,
   };
 }
 

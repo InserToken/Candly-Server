@@ -11,7 +11,7 @@ var indexRouter = require("./routes/index");
 var authRouter = require("./routes/auth");
 // var balanceRouter = require("./routes/real");
 var userStockRouter = require("./routes/userStock");
-var myPageRouter = require("./routes/myPage");
+
 /* --------------------------------------- */
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -55,6 +55,7 @@ const seedRouter = require("./routes/seed");
 app.use("/api/seed", seedRouter);
 // app.use("/api/real", balanceRouter);
 app.use("/api/userStock", userStockRouter);
+const myPageRouter = require("./routes/myPage");
 app.use("/api/myPage", myPageRouter);
 const practiceProblemSeedRouter = require("./routes/practiceProblemSeedRouter");
 app.use("/api/practiceSeed", practiceProblemSeedRouter);
