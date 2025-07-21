@@ -72,6 +72,10 @@ const practiceProblemRouter = require("./routes/practiceProblem");
 app.use("/api/practice", practiceProblemRouter);
 const realRouter = require("./routes/real");
 app.use("/api/real", realRouter);
+const newsRouter = require("./routes/news");
+app.use("/api", newsRouter);
+const cleanupRouter = require("./routes/problemCleanup");
+app.use("/api", cleanupRouter);
 /* --------------------------------------- */
 require("./services/getHoliday");
 /* --------------------------------------- */
