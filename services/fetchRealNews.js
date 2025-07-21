@@ -1,6 +1,10 @@
 const cheerio = require("cheerio");
 const { getTodayStr, formatDate } = require("../utils/date.js");
-// import { formatDate, getTodayStr } from "../utils/date.js";
+
+//확장자제한
+function hasAllowedImageExtension(url) {
+  return /\.(jpe?g|png)$/i.test(url);
+}
 
 function generateDateRange(targetDate, days) {
   const dates = [];
@@ -38,13 +42,22 @@ async function fetchRealNews(targetStock) {
         imgUrl = "https:" + imgUrl;
       }
 
-      results.push({
-        date: d, // 날짜 정보도 같이 기록하고 싶으면 남겨두고,
-        title,
-        context,
-        news_url: newsUrl,
-        img_url: imgUrl,
-      });
+      if (imgUrl && hasAllowedImageExtension(imgUrl)) {
+        results.push({
+          date: d,
+          title,
+          context,
+          news_url: newsUrl,
+          img_url: imgUrl,
+        });
+      } else {
+        results.push({
+          date: d,
+          title,
+          context,
+          news_url: newsUrl,
+        });
+      }
     }
   }
   return results;
