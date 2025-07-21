@@ -19,6 +19,7 @@ const RealInputDatachema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "UserStock",
     required: true,
+    unique: true,
   },
 
   prediction: { type: [PredictionSchema], required: true },
