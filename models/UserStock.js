@@ -10,4 +10,5 @@ const userStockSchema = new mongoose.Schema({
   cumulative_score: { type: Number },
 });
 
-module.exports = mongoose.model("UserStocks", userStockSchema);
+userStockSchema.index({ user_id: 1, stock_code: 1 }, { unique: true });
+module.exports = mongoose.model("UserStock", userStockSchema);
