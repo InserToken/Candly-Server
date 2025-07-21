@@ -37,7 +37,11 @@ mongoose
 var app = express();
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost"], // TODO: 클라이언트 주소 배포하면 추가해주기
+    origin: [
+      "http://localhost:3000",
+      "http://localhost",
+      "http://15.164.239.245",
+    ], // TODO: 클라이언트 주소 배포하면 추가해주기
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
@@ -74,8 +78,6 @@ const realRouter = require("./routes/real");
 app.use("/api/real", realRouter);
 const newsRouter = require("./routes/news");
 app.use("/api", newsRouter);
-const cleanupRouter = require("./routes/problemCleanup");
-app.use("/api", cleanupRouter);
 /* --------------------------------------- */
 require("./services/getHoliday");
 /* --------------------------------------- */
