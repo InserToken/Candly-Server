@@ -22,7 +22,9 @@ jobs:
       - name: Sync code to EC2
         run: |
           rsync -e "ssh -o StrictHostKeyChecking=no" -avz --delete \
-            --exclude='.git*' --exclude='node_modules' \
+            --exclude='.git*' \
+            --exclude='node_modules' \
+            --exclude='.env' \
             ./ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.SERVER_PATH }}
 
       - name: Build & Restart on EC2
