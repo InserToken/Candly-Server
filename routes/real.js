@@ -59,7 +59,7 @@ router.post("/:stock_code", authenticate, async (req, res) => {
 
     // 2. RealInputData에서 user_stock_id로 데이터 검색 후 update 또는 create
     const updated = await RealInputData.findOneAndUpdate(
-      { user_stock_id: userStock._id },
+      { user_stock_id: userStockDoc._id },
       { prediction: predictions },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
@@ -97,7 +97,7 @@ router.get("/:stock_code", authenticate, async (req, res) => {
 
     // 2. 해당 user_stock_id로 RealInputData 조회
     const realInput = await RealInputData.findOne({
-      user_stock_id: userStock._id,
+      user_stock_id: userStockDoc._id,
     });
 
     if (!realInput) {
