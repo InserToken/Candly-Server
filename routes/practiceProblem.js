@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const PracticeProblem = require("../models/PracticeProblem");
 const PracticeChartData = require("../models/PracticeChartData");
 const practiceNews = require("../models/PracticeNews");
-
+const problemType = require("../models/ProblemType");
 // routes/practice.js 또는 controller
 
 router.get("/", async (req, res) => {
@@ -120,6 +120,21 @@ router.get("/:problemId/news", async (req, res) => {
 
     return res.json({
       news,
+    });
+  } catch (err) {
+    console.error("뉴스 조회 에러:", err);
+    res.status(500).json({ error: "뉴스 조회 중 오류 발생" });
+  }
+});
+
+router.get("/type/:problemTypeId", async (req, res) => {
+  try {
+    const { problemTypeId } = req.params;
+    const typeData = await problemType.find({
+      id: Number(problemTypeId),
+    });
+    return res.json({
+      typeData,
     });
   } catch (err) {
     console.error("뉴스 조회 에러:", err);
