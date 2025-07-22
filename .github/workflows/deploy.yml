@@ -1,6 +1,6 @@
 name: 🚀 Auto Deploy to EC2
 
-# main 브랜치에 push 될 때마다 실행
+# develop 브랜치에 push 될 때마다 실행
 on:
   push:
     branches:
@@ -15,19 +15,21 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup SSH key
-        uses: webfactory/ssh-agent@v0.8.1
+        uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
       - name: Sync code to EC2
         run: |
-          rsync -avz --delete \
-            --exclude='.git*' --exclude='node_modules' \
+          rsync -e "ssh -o StrictHostKeyChecking=no" -avz --delete \
+            --exclude='.git*' \
+            --exclude='node_modules' \
+            --exclude='.env' \
             ./ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.SERVER_PATH }}
 
       - name: Build & Restart on EC2
         run: |
-          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
             cd ${{ secrets.SERVER_PATH }}
             npm install --production
             pm2 restart UpAndDown-Server || pm2 start npm --name UpAndDown-Server -- run start

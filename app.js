@@ -1,5 +1,6 @@
 require("dotenv").config();
 // require("./tasks/stockUpdater");
+require("./tasks/scoreUpdater");
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -17,6 +18,7 @@ const holidayRouter = require("./routes/holiday");
 const practiceProblemRouter = require("./routes/practiceProblem");
 const realRouter = require("./routes/real");
 const rankRouter = require("./routes/ranking");
+const financialRouter = require("./routes/metricsRoutes");
 /* --------------------------------------- */
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -69,12 +71,14 @@ app.use("/api/practiceSeed", practiceProblemSeedRouter);
 app.use("/api/holiday", holidayRouter);
 app.use("/api/practice", practiceProblemRouter);
 app.use("/api/real", realRouter);
+app.use("/api/financial", financialRouter);
 const newsRouter = require("./routes/news");
 app.use("/api", newsRouter);
 app.use("/api/rank", rankRouter);
 
 /* --------------------------------------- */
 require("./services/getHoliday");
+require("./tasks/dailyStockUpdater");
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
 const geminiRouter = require("./routes/gemini");
