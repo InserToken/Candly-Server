@@ -16,7 +16,6 @@ router.post("/", authenticate, async (req, res) => {
 
     const stocks = (result.output1 || []).map((item) => ({
       stock_code: item.pdno,
-      cumulative_score: 0,
     }));
 
     // 보유 종목이 하나도 없으면 모두 삭제
@@ -29,7 +28,6 @@ router.post("/", authenticate, async (req, res) => {
     const updatePromises = stocks.map((stock) =>
       UserStock.findOneAndUpdate(
         { user_id: userId, stock_code: stock.stock_code },
-        { $set: { cumulative_score: stock.cumulative_score } },
         { upsert: true, new: true }
       )
     );
