@@ -6,6 +6,7 @@ const RealInputData = require("../models/RealInputData");
 const { authenticate } = require("../middleware/auth");
 const userStock = require("../models/UserStock");
 const mongoose = require("mongoose");
+const practiceChartData = require("../models/PracticeChartData");
 
 // 뉴스조회
 router.get("/:stock_code/news", async (req, res) => {
@@ -99,17 +100,35 @@ router.get("/:stock_code", authenticate, async (req, res) => {
     const realInput = await RealInputData.findOne({
       user_stock_id: userStockDoc._id,
     });
-
     if (!realInput) {
-      return res
-        .status(404)
-        .json({ error: "예측 데이터가 존재하지 않습니다." });
+      // 예측 데이터가 없을 경우
+      return res.status(200).json({ prediction: [] });
     }
 
     res.status(200).json({ prediction: realInput.prediction });
   } catch (err) {
     console.error("예측 데이터 조회 오류:", err);
     res.status(500).json({ error: "서버 오류가 발생했습니다." });
+  }
+});
+
+//차트조회
+router.get("/:stock_code/chart", async (req, res) => {
+  try {
+    const { stock_code } = req.params;
+
+    if (!stock_code) {
+      return res
+        .status(400)
+        .json({ error: "stock code 파라미터가 필요합니다." });
+    }
+    const chartData = await practiceChartData.findOne({ stock_code });
+    const prices = chartData.prices;
+
+    return res.json({ prices });
+  } catch (err) {
+    console.error("실전차트 조회 에러:", err);
+    res.status(500).json({ error: "실전차트 조회 중 오류 발생" });
   }
 });
 

@@ -77,6 +77,7 @@ app.use("/api", newsRouter);
 app.use("/api/rank", rankRouter);
 /* --------------------------------------- */
 require("./services/getHoliday");
+require("./tasks/dailyStockUpdater");
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
 

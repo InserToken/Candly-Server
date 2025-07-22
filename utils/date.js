@@ -1,3 +1,5 @@
+const Holiday = require("../models/Holiday");
+const dayjs = require("dayjs");
 // '20250101' -> '2025-01-01'
 function toDashDate(compact) {
   return `${compact.slice(0, 4)}-${compact.slice(4, 6)}-${compact.slice(6, 8)}`;
@@ -24,4 +26,18 @@ function formatDate(date) {
   return `${y}.${m}.${d}`;
 }
 
-module.exports = { toDashDate, getTodayStr, formatDate };
+// 주어진 날짜 이전의 직전 영업일을 반환
+async function getPreviousWorkDay(dateStr) {
+  const holidays = await Holiday.find({});
+  const holidaySet = new Set(holidays.map((h) => h.date)); // Set for O(1) lookup
+
+  let current = dayjs(dateStr).subtract(1, "day");
+
+  while (holidaySet.has(current.format("YYYY-MM-DD"))) {
+    current = current.subtract(1, "day");
+  }
+
+  return current.format("YYYY-MM-DD");
+}
+
+module.exports = { toDashDate, getTodayStr, formatDate, getPreviousWorkDay };
