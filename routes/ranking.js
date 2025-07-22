@@ -90,11 +90,11 @@ router.post("/day", async (req, res) => {
       // 5. 점수 계산
       const dailyScore =
         100 - (Math.abs(predObj.close - priceObj.close) / priceObj.close) * 100;
-      await RealScore.create({
-        user_stock_id: pred.user_stock_id,
-        date: yesterDay,
-        score: Math.round(dailyScore),
-      });
+      await RealScore.findOneAndUpdate(
+        { user_stock_id: pred.user_stock_id, date: yesterDay },
+        { $set: { score: Math.round(dailyScore) } },
+        { upsert: true }
+      );
       console.log("dailyScore", dailyScore);
 
       resultArr.push({
