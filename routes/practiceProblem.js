@@ -25,7 +25,7 @@ router.get("/", async (req, res) => {
     const totalCount = await PracticeProblem.countDocuments(query);
     const problems = await PracticeProblem.find(query)
       .populate("stock_code")
-      .sort({ date: 1 })
+      .sort({ date: -1 })
       .skip((page - 1) * pageSize)
       .limit(pageSize);
 
