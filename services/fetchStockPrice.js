@@ -68,4 +68,53 @@ async function fetchStockPrice(stockCode, dateStr, maxFallbackDay = 7) {
   );
 }
 
-module.exports = { fetchStockPrice };
+const dayjs = require("dayjs");
+const PracticeChartData = require("../models/PracticeChartData");
+const { getPreviousWorkDay } = require("../utils/date");
+
+async function fetchDailyPrice(stockCode, dateStr) {
+  const prevWorkDay = await getPreviousWorkDay(dateStr); // 예: "2025-07-18"
+  const ticker = `${stockCode}.KS`;
+  const nextDay = dayjs(prevWorkDay).add(1, "day").format("YYYY-MM-DD");
+
+  try {
+    const result = await yf.chart(ticker, {
+      period1: prevWorkDay,
+      period2: nextDay,
+      interval: "1d",
+    });
+
+    const candle = result?.quotes?.[0];
+
+    if (!candle) {
+      throw new Error(`주가 데이터를 찾을 수 없습니다: ${prevWorkDay}`);
+    }
+
+    const { open, close, high, low, volume } = candle;
+
+    const updateResult = await PracticeChartData.findOneAndUpdate(
+      { stock_code: stockCode },
+      {
+        $addToSet: {
+          prices: {
+            date: prevWorkDay,
+            open,
+            close,
+            high,
+            low,
+            volume,
+          },
+        },
+      },
+      { upsert: true, new: true }
+    );
+
+    // console.log(`[✅ 저장 완료] ${stockCode} / ${prevWorkDay}`);
+    return updateResult;
+  } catch (err) {
+    console.error(`[❌ 오류] fetchDailyPrice 실패: ${err.message}`);
+    throw err;
+  }
+}
+
+module.exports = { fetchStockPrice, fetchDailyPrice };

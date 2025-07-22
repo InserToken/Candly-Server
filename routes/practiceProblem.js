@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const PracticeProblem = require("../models/PracticeProblem");
 const PracticeChartData = require("../models/PracticeChartData");
 const practiceNews = require("../models/PracticeNews");
+const problemType = require("../models/ProblemType");
+const { hasAllowedImageExtension } = require("../utils/news");
 
 // 연습문제 List
 router.get("/", async (req, res) => {
@@ -96,7 +98,7 @@ router.get("/:problemId", async (req, res) => {
   }
 });
 
-//뉴스조회
+// 뉴스조회
 router.get("/:problemId/news", async (req, res) => {
   try {
     const { problemId } = req.params;
@@ -113,10 +115,28 @@ router.get("/:problemId/news", async (req, res) => {
         .json({ error: "해당 문제에 해당하는 뉴스를 찾을 수 없습니다." });
     }
 
-    const news = newsdata.news;
+    // img_url이 있는 경우에만 필터링 (없으면 전체 노출)
+    const filteredNews = newsdata.news.filter((item) => {
+      return item.img_url && hasAllowedImageExtension(item.img_url);
+    });
 
     return res.json({
-      news,
+      news: filteredNews,
+    });
+  } catch (err) {
+    console.error("뉴스 조회 에러:", err);
+    res.status(500).json({ error: "뉴스 조회 중 오류 발생" });
+  }
+});
+
+router.get("/type/:problemTypeId", async (req, res) => {
+  try {
+    const { problemTypeId } = req.params;
+    const typeData = await problemType.find({
+      id: Number(problemTypeId),
+    });
+    return res.json({
+      typeData,
     });
   } catch (err) {
     console.error("뉴스 조회 에러:", err);
