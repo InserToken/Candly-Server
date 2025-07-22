@@ -80,6 +80,7 @@ const newsRouter = require("./routes/news");
 app.use("/api", newsRouter);
 /* --------------------------------------- */
 require("./services/getHoliday");
+require("./tasks/dailyStockUpdater");
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
 

@@ -1,10 +1,6 @@
 const cheerio = require("cheerio");
 const { getTodayStr, formatDate } = require("../utils/date.js");
-
-//확장자제한
-function hasAllowedImageExtension(url) {
-  return /\.(jpe?g|png)$/i.test(url);
-}
+const { hasAllowedImageExtension } = require("../utils/news.js");
 
 function generateDateRange(targetDate, days) {
   const dates = [];
