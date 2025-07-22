@@ -5,8 +5,7 @@ const PracticeProblem = require("../models/PracticeProblem");
 const PracticeChartData = require("../models/PracticeChartData");
 const practiceNews = require("../models/PracticeNews");
 
-// routes/practice.js 또는 controller
-
+// 연습문제 List
 router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -38,8 +37,6 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "서버 오류" });
   }
 });
-
-module.exports = router;
 
 //문제정보조회
 router.get("/:problemId", async (req, res) => {
