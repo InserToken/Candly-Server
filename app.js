@@ -75,12 +75,14 @@ app.use("/api/financial", financialRouter);
 const newsRouter = require("./routes/news");
 app.use("/api", newsRouter);
 app.use("/api/rank", rankRouter);
+
 /* --------------------------------------- */
 require("./services/getHoliday");
 require("./tasks/dailyStockUpdater");
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
-
+const geminiRouter = require("./routes/gemini");
+app.use("/api/gemini", geminiRouter);
 // 서버 시작
 app.listen(port, () => {
   console.log(`▶️ Server is listening on http://localhost:${port}`);
