@@ -67,9 +67,9 @@ async function computeMetrics(stockCode, dateStr) {
   const bps = valid[valid.length - 1].bps;
   const roe = valid[valid.length - 1].roe;
 
-  const pbr = bps ? stockPrice / bps : null;
-  const per = eps ? stockPrice / eps : null;
-  const psr = ttmRevenue ? (stockPrice * shareCount) / ttmRevenue : null;
+  // const pbr = bps ? stockPrice / bps : null;
+  // const per = eps ? stockPrice / eps : null;
+  // const psr = ttmRevenue ? (stockPrice * shareCount) / ttmRevenue : null;
 
   const series = {
     period: valid.map((e) => `${e.bsns_year}.${e.reprt_code}`),
@@ -84,9 +84,11 @@ async function computeMetrics(stockCode, dateStr) {
 
   return {
     price: { price: stockPrice, date: priceDate },
-    per,
-    psr,
-    pbr,
+    stockPrice,
+    shareCount,
+    // per,
+    // psr,
+    // pbr,
     eps,
     bps,
     roe,
