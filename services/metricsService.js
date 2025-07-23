@@ -1,4 +1,3 @@
-// services/metricsService.js
 const FinancialSummary = require("../models/FinancialSummary");
 const { fetchStockPrice } = require("./fetchStockPrice");
 
@@ -28,49 +27,48 @@ async function computeMetrics(stockCode, dateStr) {
 
   // 기준일자 파싱
   const baseDate = new Date(dateStr.replace(/\./g, "-"));
-  // console.log(baseDate);
   if (isNaN(baseDate)) throw new Error("잘못된 날짜 형식: " + dateStr);
 
-  // entries 에 periodDate 부착 & 기준 이전만 필터링
-  const withDate = doc.entries.map((e) => ({
-    ...e,
-    periodDate: getPeriodDate(e),
-  }));
-  const valid = withDate
+  // entries에 periodDate 부착 & 기준 이전만 필터
+  const valid = doc.entries
+    .map((e) => ({ ...e, periodDate: getPeriodDate(e) }))
     .filter((e) => e.periodDate <= baseDate)
     .sort((a, b) => a.periodDate - b.periodDate);
 
-  if (valid.length < 2) throw new Error("조회일자 이전에 분기가 부족합니다");
+  // 최소 4분기 데이터 확보
+  if (valid.length < 4) {
+    throw new Error("4분기 이상 데이터가 필요합니다.");
+  }
 
-  // TTM 합산 및 평균자본
+  // 최신 분기 데이터
+  const last = valid[valid.length - 1];
+
+  // TTM 합산값과 주식수
+  const profit = last.profit;
+  const ttmRevenue = last.revenue_ttm;
+  const equityTTM = last.equity_ttm;
+  const shareCount = last.istc_totqy;
+
+  if (!profit || !ttmRevenue || !shareCount) {
+    throw new Error("TTM 데이터가 부족하여 EPS/BPS/PSR 계산이 불가능합니다.");
+  }
+
+  // EPS/BPS 보정 계산
+  const eps = last.eps != null ? last.eps : profit / shareCount;
+  const bps = last.bps != null ? last.bps : last.equity / shareCount;
+
+  // 주가 가져오기
   const { price: stockPrice, date: priceDate } = await fetchStockPrice(
     stockCode,
     dateStr
   );
 
-  const ttmProfit = valid[valid.length - 1].profit; //당기 순이익
-  const ttmRevenue = valid[valid.length - 1].revenue_ttm; //매출액
-  const ttmequity = valid[valid.length - 1].equity_ttm; // 순자산
-  const shareCount = valid[valid.length - 1].istc_totqy; // 총 발행 주식수
-  const profit_diff = valid[valid.length - 1].profit_diff; // 증감액
-  const profit_diff_rate = valid[valid.length - 1].profit_diff_rate; // 증감률
-  // const revenue = valid[valid.length - 1].revenue;
-  // const netProfit_govern = valid[valid.length - 1].net_profit_govern; // 순이익
-  // const profitMargin = valid[valid.length - 1].profit_margin; // 순 이익률
-  // const growthRate = valid[valid.length - 1].growth_rate; //순 이익 성장률
-  // const operatingProfit = valid[valid.length - 1].operating_profit; // 영업 이익
-  // const operatingMargin = valid[valid.length - 1].operating_margin; // 영업 이익률
-  // const operatingGrowthRate = valid[valid.length - 1].operating_growth_rate; // 영업 이익 성장률
-
   // 지표 계산
-  const eps = valid[valid.length - 1].eps;
-  const bps = valid[valid.length - 1].bps;
-  const roe = valid[valid.length - 1].roe;
-
-  const pbr = bps ? stockPrice / bps : null;
   const per = eps ? stockPrice / eps : null;
+  const pbr = bps ? stockPrice / bps : null;
   const psr = ttmRevenue ? (stockPrice * shareCount) / ttmRevenue : null;
 
+  // 시계열 데이터
   const series = {
     period: valid.map((e) => `${e.bsns_year}.${e.reprt_code}`),
     revenue: valid.map((e) => e.revenue),
@@ -85,16 +83,16 @@ async function computeMetrics(stockCode, dateStr) {
   return {
     price: { price: stockPrice, date: priceDate },
     per,
-    psr,
     pbr,
+    psr,
     eps,
     bps,
-    roe,
-    ttmProfit,
+    roe: last.roe,
+    ttmProfit: profit,
     ttmRevenue,
-    ttmequity,
-    profit_diff,
-    profit_diff_rate,
+    equityTTM,
+    profit_diff: last.profit_diff,
+    profit_diff_rate: last.profit_diff_rate,
     series,
   };
 }
