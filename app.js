@@ -79,6 +79,7 @@ app.use("/api/rank", rankRouter);
 app.use("/api/practicescores", practiceScoreRouter);
 const fetchFinancialData = require("./routes/financialRoutes");
 app.use("/api", fetchFinancialData);
+app.use("/api", require("./routes/fetchAllFinancials"));
 /* --------------------------------------- */
 require("./services/getHoliday");
 require("./tasks/dailyStockUpdater");
