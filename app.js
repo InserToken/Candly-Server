@@ -1,5 +1,5 @@
 require("dotenv").config();
-// require("./tasks/stockUpdater");
+require("./tasks/stockUpdater");
 require("./tasks/scoreUpdater");
 var createError = require("http-errors");
 var express = require("express");

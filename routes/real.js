@@ -7,7 +7,7 @@ const { authenticate } = require("../middleware/auth");
 const userStock = require("../models/UserStock");
 const mongoose = require("mongoose");
 const practiceChartData = require("../models/PracticeChartData");
-
+const { getCurrentPrice } = require("../services/fetchCurrentPrice");
 // 뉴스조회
 router.get("/:stock_code/news", async (req, res) => {
   try {
@@ -129,6 +129,25 @@ router.get("/:stock_code/chart", async (req, res) => {
   } catch (err) {
     console.error("실전차트 조회 에러:", err);
     res.status(500).json({ error: "실전차트 조회 중 오류 발생" });
+  }
+});
+
+//실시간시세조회
+router.get("/:stock_code/currentprice", async (req, res) => {
+  try {
+    const { stock_code } = req.params;
+
+    if (!stock_code) {
+      return res
+        .status(400)
+        .json({ error: "stock code 파라미터가 필요합니다." });
+    }
+    const currentprice = await getCurrentPrice(stock_code);
+
+    return res.status(200).json({ currentprice: currentprice });
+  } catch (err) {
+    console.error("실시간 시세 조회 에러:", err);
+    res.status(500).json({ error: "실시간 시세 조회 중 오류 발생" });
   }
 });
 
