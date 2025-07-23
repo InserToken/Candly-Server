@@ -1,3 +1,4 @@
+// services/fetchCurrentPrice.js
 const fetch = require("node-fetch");
 const cheerio = require("cheerio");
 
@@ -6,7 +7,7 @@ const cheerio = require("cheerio");
  * @param stockCode 예: "005930" (삼성전자)
  * @returns 현재 주가 (숫자)
  */
-export async function getCurrentPrice(stockCode) {
+async function getCurrentPrice(stockCode) {
   try {
     const url = `https://finance.naver.com/item/main.nhn?code=${stockCode}`;
     const res = await fetch(url);
@@ -25,3 +26,5 @@ export async function getCurrentPrice(stockCode) {
     return null;
   }
 }
+
+module.exports = { getCurrentPrice };
