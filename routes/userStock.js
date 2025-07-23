@@ -3,39 +3,27 @@ const router = express.Router();
 const { getBalance } = require("../services/stockService");
 const { authenticate } = require("../middleware/auth");
 const UserStock = require("../models/UserStock");
-const Stocks = require("../models/Stocks");
+
 // 보유 주식 저장
 router.post("/", authenticate, async (req, res) => {
   const cano = "50143725";
   const acnt = "01";
   const userId = req.user._id;
+
   try {
     const result = await getBalance(cano, acnt);
+
     const stocks = (result.output1 || []).map((item) => ({
       stock_code: item.pdno,
+      cumulative_score: 0,
+      user_id: userId, // 항상 user_id 넣기!
     }));
-    // 보유 종목이 하나도 없으면 모두 삭제
-    if (stocks.length === 0) {
-      await UserStock.deleteMany({ user_id: userId });
-      return res.status(200).json({ success: true, message: "보유 종목 없음" });
-    }
-    // 1. 업서트(유지/추가)
-    const updatePromises = stocks.map((stock) =>
-      UserStock.findOneAndUpdate(
-        { user_id: userId, stock_code: stock.stock_code },
-        { upsert: true, new: true }
-      )
-    );
-    await Promise.all(updatePromises);
-    // 2. stocks에 없는 종목은 삭제
-    const currentCodes = stocks.map((stock) => stock.stock_code);
-    await UserStock.deleteMany({
-      user_id: userId,
-      stock_code: { $nin: currentCodes },
-    });
+
+    await UserStock.create(stocks);
+
     res.status(200).json({
       success: true,
-      message: "계좌 연동 완료 (ID 유지)",
+      message: "계좌 연동 완료",
       inserted: stocks.length,
       output1: result.output1,
     });
@@ -44,6 +32,7 @@ router.post("/", authenticate, async (req, res) => {
     res.status(500).json({ error: "계좌 연동 실패" });
   }
 });
+
 // 보유 주식만 조회
 router.get("/stock", authenticate, async (req, res) => {
   const userId = req.user._id;
@@ -62,6 +51,7 @@ router.get("/stock", authenticate, async (req, res) => {
     res.status(500).json({ message: "서버 오류" });
   }
 });
+
 // 보유 주식 조회(전체)
 router.get("/", async (req, res) => {
   try {
@@ -78,6 +68,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "서버 오류" });
   }
 });
+
 // 보유 주식 여부
 router.get("/status", authenticate, async (req, res) => {
   const userId = req.user._id;
@@ -91,9 +82,5 @@ router.get("/status", authenticate, async (req, res) => {
     res.status(500).json({ message: "서버 에러" });
   }
 });
+
 module.exports = router;
-
-
-
-
-

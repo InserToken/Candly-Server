@@ -72,6 +72,7 @@ const dayjs = require("dayjs");
 const PracticeChartData = require("../models/PracticeChartData");
 const { getPreviousWorkDay } = require("../utils/date");
 
+// 전날 주가 업데이트
 async function fetchDailyPrice(stockCode, dateStr) {
   const prevWorkDay = await getPreviousWorkDay(dateStr); // 예: "2025-07-18"
   const ticker = `${stockCode}.KS`;
