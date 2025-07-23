@@ -12,6 +12,7 @@ const practiceScoreSchema = new mongoose.Schema({
     required: true,
   },
   answer: String,
+  feedback: String,
   score: Number,
   logic: Number,
   momentum: Number,

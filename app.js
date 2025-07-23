@@ -13,6 +13,7 @@ var authRouter = require("./routes/auth");
 var userStockRouter = require("./routes/userStock");
 var myPageRouter = require("./routes/myPage");
 const practiceProblemSeedRouter = require("./routes/practiceProblemSeedRouter");
+const practiceScoreRouter = require("./routes/practicescores");
 const stockSeedRouter = require("./routes/stockSeedRouter");
 const holidayRouter = require("./routes/holiday");
 const practiceProblemRouter = require("./routes/practiceProblem");
@@ -75,6 +76,7 @@ app.use("/api/financial", financialRouter);
 const newsRouter = require("./routes/news");
 app.use("/api", newsRouter);
 app.use("/api/rank", rankRouter);
+app.use("/api/practicescores", practiceScoreRouter);
 const fetchFinancialData = require("./routes/financialRoutes");
 app.use("/api", fetchFinancialData);
 /* --------------------------------------- */
