@@ -7,8 +7,7 @@ const practiceNews = require("../models/PracticeNews");
 const problemType = require("../models/ProblemType");
 const { hasAllowedImageExtension } = require("../utils/news");
 
-// routes/practice.js 또는 controller
-
+// 연습문제 List
 router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -23,8 +22,21 @@ router.get("/", async (req, res) => {
       query.problemtype = Number(category); // ← 중요!
     }
 
+    // [1] category 다중 선택 지원
+    if (category && category !== "all") {
+      // '1,2' 또는 ['1', '2'] 모두 처리
+      let categoryArr = [];
+      if (typeof category === "string" && category.includes(",")) {
+        categoryArr = category.split(",").map(Number);
+      } else {
+        categoryArr = [Number(category)];
+      }
+      query.problemtype = { $in: categoryArr };
+    }
+
     const pageSize = 20;
     const totalCount = await PracticeProblem.countDocuments(query);
+    console.log("totalCount", totalCount);
     const problems = await PracticeProblem.find(query)
       .populate("stock_code")
       .sort({ date: -1 })
@@ -40,8 +52,6 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "서버 오류" });
   }
 });
-
-module.exports = router;
 
 //문제정보조회
 router.get("/:problemId", async (req, res) => {

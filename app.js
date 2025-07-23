@@ -1,5 +1,5 @@
 require("dotenv").config();
-// require("./tasks/stockUpdater");
+require("./tasks/stockUpdater");
 require("./tasks/scoreUpdater");
 var createError = require("http-errors");
 var express = require("express");
@@ -77,6 +77,8 @@ const newsRouter = require("./routes/news");
 app.use("/api", newsRouter);
 app.use("/api/rank", rankRouter);
 app.use("/api/practicescores", practiceScoreRouter);
+const fetchFinancialData = require("./routes/financialRoutes");
+app.use("/api", fetchFinancialData);
 /* --------------------------------------- */
 require("./services/getHoliday");
 require("./tasks/dailyStockUpdater");

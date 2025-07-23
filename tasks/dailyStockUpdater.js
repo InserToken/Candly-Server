@@ -35,3 +35,5 @@ cron.schedule(
 //   console.log("[스케줄 시작] 테스트 영업일 주가 데이터 수집");
 //   await fetchAllStockPrice();
 // });
+
+module.exports = { fetchAllStockPrice };
