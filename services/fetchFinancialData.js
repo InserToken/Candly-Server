@@ -45,7 +45,6 @@ async function fetchSingle(stockCode, year, reprtCode) {
     report_name: REPORT_NAME[reprtCode] || "",
   };
 
-  // XBRL 태그 기준 주요 값 검색
   const findItem = (ids, name) =>
     data.list.find((d) => ids.includes(d.account_id)) ||
     data.list.find((d) => d.account_nm.includes(name));
@@ -125,7 +124,14 @@ async function getFinancialSummary(stockCode, startYear, endYear) {
   const flat = [];
   const corp_code = getCorpCodeByStockCode(stockCode);
 
-  // 1) 연도별 Q1, H1, Q3, A → Q4 생성
+  // 1) prevNet 초기값 설정: startYear 이전 해 4분기 순이익
+  let prevNet = null;
+  const prevQ4 = await fetchSingle(stockCode, startYear - 1, "4Q");
+  if (prevQ4) {
+    prevNet = prevQ4.net_profit;
+  }
+
+  // 2) 연도별 Q1, H1, Q3, A → Q4 생성
   for (let year = startYear; year <= endYear; year++) {
     const raws = await Promise.all(
       ["11013", "11012", "11014", "11011"].map((c) =>
@@ -156,8 +162,6 @@ async function getFinancialSummary(stockCode, startYear, endYear) {
     };
     Q4.net_profit_non_govern = Q4.net_profit - Q4.net_profit_govern;
 
-    let prevNet = null;
-
     for (const q of [Q1, H1, Q3, Q4]) {
       // 마진 및 성장률
       q.profit_margin = q.revenue ? (q.net_profit / q.revenue) * 100 : null;
@@ -181,16 +185,16 @@ async function getFinancialSummary(stockCode, startYear, endYear) {
     }
   }
 
-  // 2) 정렬: 연도 오름차순 + 분기별 순서
+  // 3) 정렬: 연도 오름차순 + 분기별 순서
   flat.sort((a, b) => {
     const yearDiff = parseInt(a.bsns_year) - parseInt(b.bsns_year);
     if (yearDiff !== 0) return yearDiff;
     return PERIOD_ORDER[a.reprt_code] - PERIOD_ORDER[b.reprt_code];
   });
 
-  // 3) TTM 및 지표 추가
+  // 4) TTM 및 지표 추가
   const enriched = flat.map((e, i, arr) => {
-    if (i < 3) return { ...e }; // 첫 3개 분기는 TTM 불가
+    if (i < 3) return { ...e };
 
     const last4 = arr.slice(i - 3, i + 1);
     const profit = last4.reduce((s, x) => s + x.net_profit_govern, 0);

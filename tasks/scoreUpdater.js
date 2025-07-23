@@ -1,6 +1,6 @@
 const cron = require("node-cron");
 // 실제 서버 주소로 변경!
-const BASE_URL = "http://localhost:3001/api/rank";
+const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/rank`;
 
 cron.schedule("10 8 * * *", async () => {
   try {
