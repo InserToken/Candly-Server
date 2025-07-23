@@ -124,11 +124,13 @@ async function getFinancialSummary(stockCode, startYear, endYear) {
   const flat = [];
   const corp_code = getCorpCodeByStockCode(stockCode);
 
-  // 1) prevNet 초기값 설정: startYear 이전 해 4분기 순이익
+  // 1) prevNet, prevOpProfit 초기값 설정: startYear 이전 해 4분기
   let prevNet = null;
+  let prevOpProfit = null;
   const prevQ4 = await fetchSingle(stockCode, startYear - 1, "4Q");
   if (prevQ4) {
     prevNet = prevQ4.net_profit;
+    prevOpProfit = prevQ4.operating_profit;
   }
 
   // 2) 연도별 Q1, H1, Q3, A → Q4 생성
@@ -163,11 +165,16 @@ async function getFinancialSummary(stockCode, startYear, endYear) {
     Q4.net_profit_non_govern = Q4.net_profit - Q4.net_profit_govern;
 
     for (const q of [Q1, H1, Q3, Q4]) {
-      // 마진 및 성장률
+      // 마진
       q.profit_margin = q.revenue ? (q.net_profit / q.revenue) * 100 : null;
       q.operating_margin = q.revenue
         ? (q.operating_profit / q.revenue) * 100
         : null;
+
+      // 성장률
+      q.operating_growth_rate = calcRate(prevOpProfit, q.operating_profit);
+      prevOpProfit = q.operating_profit;
+
       q.growth_rate = calcRate(prevNet, q.net_profit);
       prevNet = q.net_profit;
 
