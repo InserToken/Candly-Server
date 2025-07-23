@@ -157,6 +157,7 @@ async function getFinancialSummary(stockCode, startYear, endYear) {
     Q4.net_profit_non_govern = Q4.net_profit - Q4.net_profit_govern;
 
     let prevNet = null;
+
     for (const q of [Q1, H1, Q3, Q4]) {
       // 마진 및 성장률
       q.profit_margin = q.revenue ? (q.net_profit / q.revenue) * 100 : null;

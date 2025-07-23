@@ -7,6 +7,8 @@ const EntrySchema = new mongoose.Schema(
     bsns_year: { type: String, default: "" }, // 사업연도 (예: "2023")
     reprt_code: { type: String, default: "" }, // 보고서 코드 (11013:1분기, 11012:반기, 11014:3분기, 11011:사업보고서, "4Q":4분기 조정)
     report_name: { type: String, default: "" }, // 보고서명 (예: "3분기")
+
+    // ──────────────────────────────────────────────
     revenue: { type: Number, default: 0 }, // 해당 분기 매출액
     net_profit: { type: Number, default: 0 }, // 해당 분기 당기순이익 (전체)
     net_profit_govern: { type: Number, default: 0 }, // 해당 분기 지배주주지분 당기순이익

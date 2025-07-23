@@ -75,7 +75,6 @@ app.use("/api/financial", financialRouter);
 const newsRouter = require("./routes/news");
 app.use("/api", newsRouter);
 app.use("/api/rank", rankRouter);
-
 /* --------------------------------------- */
 require("./services/getHoliday");
 require("./tasks/dailyStockUpdater");
