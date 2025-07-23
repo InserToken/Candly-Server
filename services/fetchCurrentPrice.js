@@ -1,5 +1,5 @@
-import fetch from "node-fetch";
-import * as cheerio from "cheerio";
+const fetch = require("node-fetch");
+const cheerio = require("cheerio");
 
 /**
  * 네이버 금융에서 종목 코드로 현재가 크롤링
