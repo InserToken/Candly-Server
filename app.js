@@ -19,6 +19,7 @@ const practiceProblemRouter = require("./routes/practiceProblem");
 const realRouter = require("./routes/real");
 const rankRouter = require("./routes/ranking");
 const financialRouter = require("./routes/metricsRoutes");
+const practiceScoreRouter = require("./routes/practicescores");
 /* --------------------------------------- */
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -67,6 +68,7 @@ app.use("/api/seed", seedRouter);
 app.use("/api/userStock", userStockRouter);
 app.use("/api/myPage", myPageRouter);
 app.use("/api/practiceSeed", practiceProblemSeedRouter);
+app.use("/api/practicescores", practiceScoreRouter);
 // app.use("/api/stockSeed", stockSeedRouter);
 app.use("/api/holiday", holidayRouter);
 app.use("/api/practice", practiceProblemRouter);
