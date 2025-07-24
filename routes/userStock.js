@@ -28,21 +28,7 @@ router.post("/", authenticate, async (req, res) => {
       output1: result.output1,
     });
   } catch (err) {
-    if (err.code === 11000) {
-      // 이미 연동된 경우 DB에서 해당 유저의 주식 다시 조회해서 내려주기!
-      const existingStocks = await UserStock.find({ user_id: userId });
-      // 필요한 정보만 추리기
-      const formatted = existingStocks.map((s) => ({
-        pdno: s.stock_code,
-        prdt_name: s.company || "", // company 필드가 없다면 적절히 수정!
-      }));
-
-      return res.status(200).json({
-        success: true,
-        message: "이미 연동된 주식이 있습니다.",
-        output1: formatted,
-      });
-    }
+    console.error("계좌 연동 오류:", err.message);
     res.status(500).json({ error: "계좌 연동 실패" });
   }
 });
@@ -55,7 +41,10 @@ router.get("/stock", authenticate, async (req, res) => {
       "stock_code"
     );
     // stock_code만 추출
-    const stockOnly = userStock.map((s) => s.stock_code);
+    const stockOnly = userStock.map((s) => ({
+      stock_code: s.stock_code, // populate된 종목 정보 전체
+      cumulative_score: s.cumulative_score, // 보유 주식 문서의 필드
+    }));
     res.json({
       message: "보유 주식 코드만 추출 완료",
       stocks: stockOnly,
