@@ -5,6 +5,7 @@ const { authenticate } = require("../middleware/auth");
 const UserStock = require("../models/UserStock");
 
 // 보유 주식 저장
+// 보유 주식 저장
 router.post("/", authenticate, async (req, res) => {
   const cano = "50143725";
   const acnt = "01";
@@ -28,7 +29,21 @@ router.post("/", authenticate, async (req, res) => {
       output1: result.output1,
     });
   } catch (err) {
-    console.error("계좌 연동 오류:", err.message);
+    if (err.code === 11000) {
+      // 이미 연동된 경우 DB에서 해당 유저의 주식 다시 조회해서 내려주기!
+      const existingStocks = await UserStock.find({ user_id: userId });
+      // 필요한 정보만 추리기
+      const formatted = existingStocks.map((s) => ({
+        pdno: s.stock_code,
+        prdt_name: s.company || "", // company 필드가 없다면 적절히 수정!
+      }));
+
+      return res.status(200).json({
+        success: true,
+        message: "이미 연동된 주식이 있습니다.",
+        output1: formatted,
+      });
+    }
     res.status(500).json({ error: "계좌 연동 실패" });
   }
 });
