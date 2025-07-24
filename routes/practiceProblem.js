@@ -34,7 +34,7 @@ router.get("/", async (req, res) => {
       query.problemtype = { $in: categoryArr };
     }
 
-    const pageSize = 20;
+    const pageSize = 15;
     const totalCount = await PracticeProblem.countDocuments(query);
     console.log("totalCount", totalCount);
     const problems = await PracticeProblem.find(query)

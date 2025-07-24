@@ -13,11 +13,18 @@ router.get("/practice", authenticate, async (req, res) => {
     const userId = req.user._id;
 
     const scores = await PracticeScore.find({ user_id: userId })
-      .populate({
-        path: "problem_id",
-        select: "stock_code title date problemtype", // 필요한 필드만 선택
-        strictPopulate: false,
-      })
+      .populate([
+        {
+          path: "problem_id",
+          select: "stock_code title date problemtype",
+          populate: {
+            path: "stock_code",
+            select: "name logo",
+            strictPopulate: false,
+          },
+          strictPopulate: false,
+        },
+      ])
       .sort({ date: -1 }); // 최신순 정렬
 
     res.json({
