@@ -5,32 +5,48 @@ const fetchRealNews = require("../services/fetchRealNews");
 const RealInputData = require("../models/RealInputData");
 const { authenticate } = require("../middleware/auth");
 const userStock = require("../models/UserStock");
-const mongoose = require("mongoose");
 const practiceChartData = require("../models/PracticeChartData");
 const { getCurrentPrice } = require("../services/fetchCurrentPrice");
+
+let newsCache = {};
+const CACHE_TTL = 60 * 60 * 1000; // 1시간
 // 뉴스조회
 router.get("/:stock_code/news", async (req, res) => {
   try {
     const { stock_code } = req.params;
-
     if (!stock_code) {
       return res
         .status(400)
         .json({ error: "stock code 파라미터가 필요합니다." });
     }
 
+    // 1. 캐시 먼저 확인
+    const now = Date.now();
+    if (
+      newsCache[stock_code] &&
+      now - newsCache[stock_code].timestamp < CACHE_TTL
+    ) {
+      return res.json({ newsdata: newsCache[stock_code].data });
+    }
+
+    // 2. DB에서 종목명 조회
     const stockInfo = await stock.findOne({ _id: stock_code });
     const stockName = stockInfo.name;
 
+    // 3. 실제 뉴스 fetch
     const newsdata = await fetchRealNews(stockName);
 
     if (!newsdata) {
       return res.status(404).json({ error: "최근 뉴스가 없습니다." });
     }
 
-    return res.json({
-      newsdata,
-    });
+    // 4. 캐시에 저장
+    newsCache[stock_code] = {
+      data: newsdata,
+      timestamp: now,
+    };
+
+    return res.json({ newsdata });
   } catch (err) {
     console.error("뉴스 조회 에러:", err);
     res.status(500).json({ error: "뉴스 조회 중 오류 발생" });
