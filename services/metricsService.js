@@ -1,5 +1,8 @@
 const FinancialSummary = require("../models/FinancialSummary");
 const { fetchStockPrice } = require("./fetchStockPrice");
+const NodeCache = require("node-cache");
+
+const cache = new NodeCache({ stdTTL: 3600 }); // 1시간 캐시
 
 /** reprt_code → 분기 말일 매핑 */
 const PERIOD_END = {
@@ -21,6 +24,14 @@ function getPeriodDate(entry) {
  * @returns {Promise<object>} 계산된 지표들
  */
 async function computeMetrics(stockCode, dateStr) {
+  const cacheKey = `${stockCode}_${dateStr}`;
+  console.log("cacheKey 생성:", cacheKey);
+
+  const cached = cache.get(cacheKey);
+  if (cached) {
+    console.log("📦 캐시된 데이터 반환:", cacheKey);
+    return cached;
+  }
   // DB에서 불러오기
   const doc = await FinancialSummary.findOne({ stock_code: stockCode }).lean();
   if (!doc) throw new Error("금융 요약 데이터가 없습니다: " + stockCode);
@@ -64,9 +75,9 @@ async function computeMetrics(stockCode, dateStr) {
   );
 
   // 지표 계산
-  const per = eps ? stockPrice / eps : null;
-  const pbr = bps ? stockPrice / bps : null;
-  const psr = ttmRevenue ? (stockPrice * shareCount) / ttmRevenue : null;
+  // const per = eps ? stockPrice / eps : null;
+  // const pbr = bps ? stockPrice / bps : null;
+  // const psr = ttmRevenue ? (stockPrice * shareCount) / ttmRevenue : null;
 
   // 시계열 데이터
   const series = {
@@ -80,16 +91,10 @@ async function computeMetrics(stockCode, dateStr) {
     operatingGrowthRate: valid.map((e) => e.operating_growth_rate),
   };
 
-  return {
+  const result = {
     price: { price: stockPrice, date: priceDate },
-    per,
-    pbr,
-    psr,
     stockPrice,
     shareCount,
-    // per,
-    // psr,
-    // pbr,
     eps,
     bps,
     roe: last.roe,
@@ -100,6 +105,11 @@ async function computeMetrics(stockCode, dateStr) {
     profit_diff_rate: last.profit_diff_rate,
     series,
   };
+
+  cache.set(`${stockCode}_${dateStr}`, result);
+  console.log("📝 캐시에 저장함:", `${stockCode}_${dateStr}`);
+
+  return result;
 }
 
 module.exports = { computeMetrics };

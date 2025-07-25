@@ -7,7 +7,7 @@ const FinancialSummary = require("../models/FinancialSummary");
 
 const router = express.Router();
 
-const API_KEY = "695e30af841d9e180b0378b7b5e5c5048f9b8fd6";
+const API_KEY = "f829a70ff7a97b41e53e6f4c190b288d85052c15";
 const FIN_URL = "https://opendart.fss.or.kr/api/stockTotqySttus.json";
 const currentYear = 2025;
 const REPORT_CODES = [11013, 11012, 11014, 11011];
