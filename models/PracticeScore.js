@@ -15,7 +15,7 @@ const practiceScoreSchema = new mongoose.Schema({
   feedback: String,
   score: Number,
   logic: Number,
-  momentum: Number,
+  technical: Number,
   macroEconomy: Number,
   marketIssues: Number,
   quantEvidence: Number,
