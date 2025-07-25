@@ -31,11 +31,13 @@ router.post("/", authenticate, async (req, res) => {
   } catch (err) {
     if (err.code === 11000) {
       // 이미 연동된 경우 DB에서 해당 유저의 주식 다시 조회해서 내려주기!
-      const existingStocks = await UserStock.find({ user_id: userId });
+      const existingStocks = await UserStock.find({ user_id: userId }).populate(
+        "stock_code"
+      );
       // 필요한 정보만 추리기
       const formatted = existingStocks.map((s) => ({
         pdno: s.stock_code,
-        prdt_name: s.company || "", // company 필드가 없다면 적절히 수정!
+        prdt_name: s.stock_code.name || "", // company 필드가 없다면 적절히 수정!
       }));
 
       return res.status(200).json({
