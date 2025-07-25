@@ -37,6 +37,7 @@
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.3",
     "morgan": "~1.9.1",
+    "node-cache": "^5.1.2",
     "node-cron": "^4.2.1",
     "node-fetch": "^2.7.0",
     "validator": "^13.15.15",
