@@ -60,13 +60,24 @@ async function computeMetrics(stockCode, dateStr) {
   const equityTTM = last.equity_ttm;
   const shareCount = last.istc_totqy;
 
-  if (!profit || !ttmRevenue || !shareCount) {
-    throw new Error("TTM 데이터가 부족하여 EPS/BPS/PSR 계산이 불가능합니다.");
-  }
+  const isValidTTM =
+    profit != null &&
+    ttmRevenue != null &&
+    equityTTM != null &&
+    shareCount != null;
 
-  // EPS/BPS 보정 계산
-  const eps = last.eps != null ? last.eps : profit / shareCount;
-  const bps = last.bps != null ? last.bps : last.equity / shareCount;
+  const eps =
+    isValidTTM && last.eps != null
+      ? last.eps
+      : isValidTTM
+      ? profit / shareCount
+      : null;
+  const bps =
+    isValidTTM && last.bps != null
+      ? last.bps
+      : isValidTTM
+      ? last.equity / shareCount
+      : null;
 
   // 주가 가져오기
   const { price: stockPrice, date: priceDate } = await fetchStockPrice(
