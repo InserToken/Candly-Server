@@ -141,30 +141,50 @@ async function getFinancialSummary(stockCode, startYear, endYear) {
       )
     );
     const [Q1, H1, Q3, A] = raws;
-    if (!Q1 || !H1 || !Q3 || !A) continue;
 
-    const Q4 = {
-      rcept_no: A.rcept_no,
-      bsns_year: A.bsns_year,
-      reprt_code: "4Q",
-      report_name: REPORT_NAME["4Q"],
-      revenue: A.revenue - H1.revenue - Q1.revenue - Q3.revenue,
-      net_profit: A.net_profit - H1.net_profit - Q1.net_profit - Q3.net_profit,
-      net_profit_govern:
-        A.net_profit_govern -
-        H1.net_profit_govern -
-        Q1.net_profit_govern -
-        Q3.net_profit_govern,
-      operating_profit:
-        A.operating_profit -
-        H1.operating_profit -
-        Q1.operating_profit -
-        Q3.operating_profit,
-      equity: A.equity,
-    };
-    Q4.net_profit_non_govern = Q4.net_profit - Q4.net_profit_govern;
+    const corp_code = getCorpCodeByStockCode(stockCode);
 
-    for (const q of [Q1, H1, Q3, Q4]) {
+    const quarters = [];
+
+    if (Q1) quarters.push(Q1);
+    if (H1) quarters.push(H1);
+    if (Q3) quarters.push(Q3);
+
+    // A가 있으면 Q4 생성해서 추가
+    if (A) {
+      const Q4 = {
+        rcept_no: A.rcept_no,
+        bsns_year: A.bsns_year,
+        reprt_code: "4Q",
+        report_name: REPORT_NAME["4Q"],
+        revenue:
+          A.revenue -
+          (H1?.revenue || 0) -
+          (Q1?.revenue || 0) -
+          (Q3?.revenue || 0),
+        net_profit:
+          A.net_profit -
+          (H1?.net_profit || 0) -
+          (Q1?.net_profit || 0) -
+          (Q3?.net_profit || 0),
+        net_profit_govern:
+          A.net_profit_govern -
+          (H1?.net_profit_govern || 0) -
+          (Q1?.net_profit_govern || 0) -
+          (Q3?.net_profit_govern || 0),
+        operating_profit:
+          A.operating_profit -
+          (H1?.operating_profit || 0) -
+          (Q1?.operating_profit || 0) -
+          (Q3?.operating_profit || 0),
+        equity: A.equity,
+      };
+      Q4.net_profit_non_govern = Q4.net_profit - Q4.net_profit_govern;
+      quarters.push(Q4);
+    }
+
+    // ⛳️ quarters 배열에 들어있는 모든 분기 데이터 처리
+    for (const q of quarters) {
       // 마진
       q.profit_margin = q.revenue ? (q.net_profit / q.revenue) * 100 : null;
       q.operating_margin = q.revenue
@@ -178,7 +198,7 @@ async function getFinancialSummary(stockCode, startYear, endYear) {
       q.growth_rate = calcRate(prevNet, q.net_profit);
       prevNet = q.net_profit;
 
-      // 주식수
+      // 주식 수
       const shares = await fetchShareCounts(
         corp_code,
         q.bsns_year,
@@ -188,7 +208,7 @@ async function getFinancialSummary(stockCode, startYear, endYear) {
       q.tesstk_co = shares.tesstk_co;
       q.distb_stock_co = shares.distb_stock_co;
 
-      flat.push(q);
+      flat.push(q); // 👉 저장!
     }
   }
 
