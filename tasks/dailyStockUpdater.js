@@ -1,4 +1,4 @@
-// 매일 6시 전날 주가 데이터 업데이트
+// 매일 자정 전날 주가 데이터 업데이트
 const cron = require("node-cron");
 const { fetchDailyPrice } = require("../services/fetchStockPrice");
 const Stock = require("../models/Stocks");
@@ -23,7 +23,7 @@ async function fetchAllStockPrice() {
 }
 
 cron.schedule(
-  "0 6 * * *",
+  "0 0 * * *",
   async () => {
     console.log("[스케줄 시작] 매일 6시 직전 영업일 주가 데이터 수집");
     await fetchAllStockPrice();
