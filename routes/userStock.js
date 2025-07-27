@@ -103,4 +103,20 @@ router.get("/status", authenticate, async (req, res) => {
   }
 });
 
+// 해당 유저가 보유한 주식인지 판단
+router.get("/stock/:stock_code", authenticate, async (req, res) => {
+  const userId = req.user._id;
+  const { stock_code } = req.params;
+
+  const hasStock = await UserStock.exists({
+    user_id: userId,
+    stock_code: stock_code,
+  });
+  if (!hasStock) {
+    return res.status(403).json({ message: "보유하지 않은 주식입니다." });
+  }
+
+  res.json({ message: "ok", hasStock: !!hasStock });
+});
+
 module.exports = router;
