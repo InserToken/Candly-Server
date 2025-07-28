@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const remarkParse = require("remark-parse");
-const { unified } = require("unified");
-console.log(remarkParse.default);
+// const remarkParse = require("remark-parse");
+// const { unified } = require("unified");
+// console.log(remarkParse.default);
 
-const mdProcessor = unified().use(remarkParse.default);
+// const mdProcessor = unified().use(remarkParse.default);
 const genAI = new GoogleGenerativeAI(process.env.GENERATIVE_AI_API_KEY);
 
 router.post("/grade", async (req, res) => {
