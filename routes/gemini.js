@@ -2,6 +2,11 @@ const express = require("express");
 const router = express.Router();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
+const remarkParse = require("remark-parse");
+const { unified } = require("unified");
+console.log(remarkParse.default);
+
+const mdProcessor = unified().use(remarkParse.default);
 const genAI = new GoogleGenerativeAI(process.env.GENERATIVE_AI_API_KEY);
 
 router.post("/grade", async (req, res) => {
@@ -49,11 +54,34 @@ router.post("/grade", async (req, res) => {
     const result = await model.generateContent(fullPrompt);
     const text = result.response.text();
 
-    res.json({ result: text }); // ✅ 파싱 없이 그대로 응답
+    const parseTree = mdProcessor.parse(text);
+    console.log("parseTree", parseTree);
+    const tree = await mdProcessor.run(parseTree);
+    console.log("tree", tree);
+    const data = JSON.parse(tree.children[0].value);
+
+    // console.log("text", text);
+
+    text1 = text.replace(/```json|```|'''json|'''/gi, "").trim();
+    console.log("응답", text1);
+
+    res.json({ result: text });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "채점 실패" });
   }
 });
+
+// // import { removePosition } from "unist-util-remove-position";
+
+// const processor = unified().use(remarkParse);
+
+// const value = '```json {"score": 30, "breakdown:{"logic":5, techinial:20}}```';
+// const parseTree = processor.parse(value);
+// const tree = await processor.run(parseTree);
+
+// // removePosition(tree, { force: true });
+
+// console.dir(tree, { depth: null });
 
 module.exports = router;
