@@ -1,1 +1,1 @@
-# UpAndDown-Server
+# Candly-Server
