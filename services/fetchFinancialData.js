@@ -204,9 +204,11 @@ async function getFinancialSummary(stockCode, startYear, endYear) {
         q.bsns_year,
         q.reprt_code
       );
-      q.istc_totqy = shares.istc_totqy;
-      q.tesstk_co = shares.tesstk_co;
-      q.distb_stock_co = shares.distb_stock_co;
+      const prev = flat.length > 0 ? flat[flat.length - 1] : null;
+
+      q.istc_totqy = shares.istc_totqy || prev?.istc_totqy || 0;
+      q.tesstk_co = shares.tesstk_co || prev?.tesstk_co || 0;
+      q.distb_stock_co = shares.distb_stock_co || prev?.distb_stock_co || 0;
 
       flat.push(q); // 👉 저장!
     }
