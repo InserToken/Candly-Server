@@ -7,7 +7,6 @@ const genAI = new GoogleGenerativeAI(process.env.GENERATIVE_AI_API_KEY);
 
 router.post("/grade", async (req, res) => {
   try {
-    // 프론트에서 prompt(프롬프트), user_answer(유저 답변) 둘 다 받기!
     const { prompt, user_answer } = req.body;
 
     if (!prompt || !user_answer) {
@@ -16,10 +15,8 @@ router.post("/grade", async (req, res) => {
         .json({ error: "prompt와 user_answer 모두 필요합니다." });
     }
 
-    // 최신 모델명 사용!
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    // prompt를 해당 위치에 동적으로 삽입!
     const fullPrompt = `
       너는 투자 교육 서비스의 채점자야. 아래 사용자 답변이 얼마나 구체적이고 정확한지를 기준별로 100점 만점 채점해줘.
       차트 기술적 분석에 비중을 두고 채점해줘.
@@ -52,7 +49,21 @@ router.post("/grade", async (req, res) => {
     const result = await model.generateContent(fullPrompt);
     const text = result.response.text();
 
-    res.json({ result: text });
+    // JSON 파싱
+    const parsed = JSON.parse(text);
+
+    // score 재계산
+    const { breakdown } = parsed;
+    const calcScore =
+      (breakdown.logic || 0) +
+      (breakdown.technical || 0) +
+      (breakdown.macroEconomy || 0) +
+      (breakdown.marketIssues || 0) +
+      (breakdown.quantEvidence || 0);
+
+    parsed.score = calcScore;
+
+    res.json({ result: parsed });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "채점 실패" });
