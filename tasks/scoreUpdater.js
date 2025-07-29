@@ -1,8 +1,8 @@
 const cron = require("node-cron");
 // 실제 서버 주소로 변경!
-const BASE_URL = `http://localhost:3001/api/rank`;
+const BASE_URL = `/api/rank`;
 
-cron.schedule("10 8 * * *", async () => {
+cron.schedule("0 7 * * *", async () => {
   try {
     // 1. 하루치 점수 계산
     console.log("[CRON] Start day calculation");
