@@ -3,8 +3,30 @@ const router = express.Router();
 const { getBalance } = require("../services/stockService");
 const { authenticate } = require("../middleware/auth");
 const UserStock = require("../models/UserStock");
+const RealScore = require("../models/RealScore");
+// const UserStock = require("../models/UserStock");
+const Auth = require("../models/Auth");
 
-// 보유 주식 저장
+router.delete("/cleanup-orphans", async (req, res) => {
+  try {
+    // 1. 모든 유효한 user _id 조회
+    const validUserIds = await RealScore.distinct("user_stock_id");
+
+    // 2. UserStock에서 user_id가 없는 _id만 찾기
+    const result = await UserStock.deleteMany({
+      _id: { $nin: validUserIds },
+    });
+
+    return res.json({
+      message: "고아 UserStock 삭제 완료",
+      deletedCount: result.deletedCount,
+    });
+  } catch (err) {
+    console.error("[고아 UserStock 삭제 오류]", err);
+    res.status(500).json({ error: "서버 에러" });
+  }
+});
+
 // 보유 주식 저장
 router.post("/", authenticate, async (req, res) => {
   const cano = "50143725";
@@ -30,14 +52,13 @@ router.post("/", authenticate, async (req, res) => {
     });
   } catch (err) {
     if (err.code === 11000) {
-      // 이미 연동된 경우 DB에서 해당 유저의 주식 다시 조회해서 내려주기!
       const existingStocks = await UserStock.find({ user_id: userId }).populate(
         "stock_code"
       );
-      // 필요한 정보만 추리기
+
       const formatted = existingStocks.map((s) => ({
-        pdno: s.stock_code,
-        prdt_name: s.stock_code.name || "", // company 필드가 없다면 적절히 수정!
+        pdno: s.stock_code.code || s.stock_code._id.toString(), // ✅ 문자열로 보장
+        prdt_name: s.stock_code.name || "",
       }));
 
       return res.status(200).json({
