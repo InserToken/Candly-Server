@@ -1,4 +1,6 @@
 require("dotenv").config();
+require("./tasks/stockUpdater");
+require("./tasks/scoreUpdater");
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -7,8 +9,17 @@ var logger = require("morgan");
 var cors = require("cors");
 /* --------------------------------------- */
 var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
 var authRouter = require("./routes/auth");
+var userStockRouter = require("./routes/userStock");
+var myPageRouter = require("./routes/myPage");
+const practiceProblemSeedRouter = require("./routes/practiceProblemSeedRouter");
+const stockSeedRouter = require("./routes/stockSeedRouter");
+const holidayRouter = require("./routes/holiday");
+const practiceProblemRouter = require("./routes/practiceProblem");
+const realRouter = require("./routes/real");
+const rankRouter = require("./routes/ranking");
+const financialRouter = require("./routes/metricsRoutes");
+const practiceScoreRouter = require("./routes/practicescores");
 /* --------------------------------------- */
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -34,7 +45,11 @@ mongoose
 var app = express();
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost"], // TODO: 클라이언트 주소 배포하면 추가해주기
+    origin: [
+      "http://localhost:3000",
+      "http://localhost",
+      "http://15.164.239.245",
+    ], // TODO: 클라이언트 주소 배포하면 추가해주기
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
@@ -47,15 +62,32 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 /* --------------------------------------- */
 app.use("/", indexRouter);
-app.use("/auth", authRouter);
-app.use("/users", usersRouter);
-var balanceRouter = require("./routes/real");
-app.use("/api/real", balanceRouter);
+app.use("/api/auth", authRouter);
 const seedRouter = require("./routes/seed");
 app.use("/api/seed", seedRouter);
+app.use("/api/userStock", userStockRouter);
+app.use("/api/myPage", myPageRouter);
+app.use("/api/practiceSeed", practiceProblemSeedRouter);
+app.use("/api/practicescores", practiceScoreRouter);
+// app.use("/api/stockSeed", stockSeedRouter);
+app.use("/api/holiday", holidayRouter);
+app.use("/api/practice", practiceProblemRouter);
+app.use("/api/real", realRouter);
+app.use("/api/financial", financialRouter);
+const newsRouter = require("./routes/news");
+app.use("/api", newsRouter);
+app.use("/api/rank", rankRouter);
+const fetchFinancialData = require("./routes/financialRoutes");
+app.use("/api", fetchFinancialData);
+const fetchAllFinancialData = require("./routes/fetchAllFinancials");
+app.use("/api", fetchAllFinancialData);
+/* --------------------------------------- */
+require("./services/getHoliday");
+require("./tasks/dailyStockUpdater");
 /* --------------------------------------- */
 const port = process.env.PORT || 3001;
-
+const geminiRouter = require("./routes/gemini");
+app.use("/api/gemini", geminiRouter);
 // 서버 시작
 app.listen(port, () => {
   console.log(`▶️ Server is listening on http://localhost:${port}`);
@@ -73,7 +105,7 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render("error");
+  // res.render("error");
 });
 
 module.exports = app;
